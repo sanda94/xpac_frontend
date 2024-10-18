@@ -53,6 +53,7 @@ const Devices: React.FC = () => {
   const savedUserData = JSON.parse(localStorage.getItem('userData') || '{}');
   const UserType = savedUserData.userType;
   const Token = savedUserData.accessToken;
+  const UserId = savedUserData.userId;
   const { baseUrl } = useBaseUrl();
   const { colors, theme } = useTheme();
   const [deviceData, setDeviceData] = useState<Device[]>([]);
@@ -88,8 +89,9 @@ const Devices: React.FC = () => {
 
   const FetchData = async() => {
     try {
+      const url = UserType === "Customer" ? `${baseUrl}/device/all/${UserId}` :  `${baseUrl}/device/all`;
       const response = await axios.get(
-        `${baseUrl}/device/all`,{
+        url,{
           headers: {
             token: `Bearer ${Token}`,
           },
@@ -478,7 +480,7 @@ const columns: GridColDef[] = [
                   name="title"
                   onChange={(e) => setFormData({...formData , title:e.target.value})}
                   placeholder='Title'
-                  className="w-full p-2 text-[12px] border rounded-md"
+                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
                 />
               </div>
               {/* Assigned Product */}
@@ -489,7 +491,7 @@ const columns: GridColDef[] = [
                   name="asignProduct"
                   placeholder='Assigned Product'
                   onChange={(e) => setFormData({...formData , assignProduct:e.target.value})}
-                  className="w-full p-2 text-[12px] border rounded-md"
+                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
                 />
               </div>
               {/* Location */}
@@ -498,7 +500,7 @@ const columns: GridColDef[] = [
                 <select
                   name="location"
                   onChange={(e) => setFormData({...formData , location:e.target.value})}
-                  className="w-full p-2  text-[12px] border rounded-md"
+                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
                 >
                   <option value="None">None</option>
                   {locations.length > 0 && locations.map((l , index) => (
@@ -514,7 +516,7 @@ const columns: GridColDef[] = [
                   name="unitWeight"
                   placeholder='Unit Weight'
                   onChange={(e) => setFormData({...formData , unitWeight:e.target.value})}
-                  className="w-full p-2 text-[12px] border rounded-md"
+                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
                 />
               </div>
               {/* Minimum count */}
@@ -525,7 +527,7 @@ const columns: GridColDef[] = [
                   name="minItems"
                   placeholder='Minimum Items Count'
                   onChange={(e) => setFormData({...formData , minItemsCount:e.target.value})}
-                  className="w-full p-2 text-[12px] border rounded-md"
+                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
                 />
               </div>
               {/* Maximum Battery Percentage */}
@@ -536,7 +538,7 @@ const columns: GridColDef[] = [
                   name="minBattery"
                   placeholder='Minimum Battery Percentage'
                   onChange={(e) => setFormData({...formData , minBatteryPercentage:e.target.value})}
-                  className="w-full p-2 text-[12px] border rounded-md"
+                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
                 />
               </div>
               {/* Maximum Battery Volatage */}
@@ -547,7 +549,7 @@ const columns: GridColDef[] = [
                   name="minVoltage"
                   placeholder='Minimum Battery Voltage'
                   onChange={(e) => setFormData({...formData , minBatteryVoltage:e.target.value})}
-                  className="w-full p-2 text-[12px] border rounded-md"
+                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
                 />
               </div>
               <div className="">
@@ -555,7 +557,7 @@ const columns: GridColDef[] = [
                 <select
                   name="status"
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                  className="w-full p-2  text-[12px] border rounded-md"
+                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
                 >
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
@@ -566,7 +568,7 @@ const columns: GridColDef[] = [
                 <select
                   name="category"
                   onChange={(e) => setFormData({...formData , category:e.target.value})}
-                  className="w-full p-2  text-[12px] border rounded-md"
+                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
                 >
                   <option value="None">None</option>
                   {categories.length > 0 && categories.map((c , index) => (
@@ -581,7 +583,7 @@ const columns: GridColDef[] = [
                   type="file"
                   id="image"
                   accept="image/*"
-                  className="w-full p-2 text-[12px] border rounded-md"
+                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
                   onChange={HandleFileChange}
                 />
               </div>
@@ -593,7 +595,7 @@ const columns: GridColDef[] = [
                       name="description"
                       onChange={(e) => setFormData({...formData , description:e.target.value})}
                       placeholder='Description'
-                      className="w-full p-2 text-[12px] border rounded-md"
+                      className="w-full p-2 mt-2 text-[12px] border rounded-md"
                     />
                 </div>
               {/* Description */}
@@ -604,7 +606,7 @@ const columns: GridColDef[] = [
                   name="message"
                   placeholder='Message'
                   onChange={(e) => setFormData({...formData , message:e.target.value})}
-                  className="w-full p-2 text-[12px] border rounded-md"
+                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
                 />
               </div>
               <div className="flex justify-center gap-3 lg:col-span-2">

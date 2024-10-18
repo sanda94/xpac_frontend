@@ -801,7 +801,7 @@ const Device: React.FC = () => {
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               {/* Title */}
               <div>
-                <label htmlFor="title" className="w-full font-semibold text-[13px]  ">Title</label>
+                <label htmlFor="title" className="w-full font-semibold text-[13px]">Title</label>
                 <input
                   type="text"
                   id="title"
@@ -830,7 +830,7 @@ const Device: React.FC = () => {
                 <select
                   name="location"
                   onChange={(e) => setNewDevice({...newDevice , location:e.target.value})}
-                  className="w-full p-2  text-[12px] border rounded-md"
+                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
                 >
                   <option value="None">None</option>
                   {locations.length > 0 && locations.map((l , index) => (
@@ -926,7 +926,7 @@ const Device: React.FC = () => {
                 </select>
               </div>
                 {/* Image Upload */}
-              <div>
+              <div className='md:col-span-2'>
                 <label htmlFor="image" className="w-full font-semibold text-[13px]">Upload Image</label>
                 <input
                   type="file"

@@ -365,13 +365,13 @@ const [devices , setDevices] = useState<Device[]>([]);
 
             <div className="flex justify-end mt-6 space-x-4">
               <button
-                className="px-4 py-3 bg-gray-300 text-[12px] w-full rounded-md hover:bg-gray-400"
+                className="px-4 py-3 text-[12px] w-full bg-gray-400 rounded-lg hover:bg-gray-300 transition-colors duration-300"
                 onClick={() => setIsFormOpen(false)}
               >
                 Cancel
               </button>
               <button
-                className="px-4 py-3 text-white text-[12px] w-full bg-blue-500 rounded-md hover:bg-blue-600"
+                className="px-4 py-3 w-full text-[12px] text-white bg-blue-400 hover:bg-blue-300 transition-colors duration-300 rounded-lg"
                 onClick={handleSubmit}
               >
                 Save

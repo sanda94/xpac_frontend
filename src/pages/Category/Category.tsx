@@ -176,6 +176,7 @@ const Category:React.FC = () => {
               <input
                 type="text"
                 name="category"
+                placeholder='Category'
                 onChange={(e) => setCategory({...category , category:e.target.value})}
                 className="w-full p-2 mt-2 border text-[12px] rounded-md"
               />
@@ -185,6 +186,7 @@ const Category:React.FC = () => {
               <input
                 type="text"
                 name="description"
+                placeholder='Description'
                 onChange={(e) => setCategory({...category , description:e.target.value})}
                 className="w-full p-2 mt-2 border text-[12px] rounded-md"
               />

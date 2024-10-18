@@ -177,7 +177,8 @@ const Location:React.FC = () => {
                 <label className='w-full font-semibold text-[13px]'>Location</label>
               <input
                 type="text"
-                name="category"
+                name="location"
+                placeholder='Location'
                 onChange={(e) => setLocation({...location , location:e.target.value})}
                 className="w-full p-2 mt-2 border text-[12px] rounded-md"
               />
@@ -187,6 +188,7 @@ const Location:React.FC = () => {
               <input
                 type="text"
                 name="description"
+                placeholder='Description'
                 onChange={(e) => setLocation({...location , description:e.target.value})}
                 className="w-full p-2 mt-2 border text-[12px] rounded-md"
               />

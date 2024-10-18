@@ -375,7 +375,7 @@ const Users: React.FC = () => {
 
       {isOpenForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-5 bg-black bg-opacity-50">
-          <div className="w-full p-6 bg-white rounded-lg h-full sm:max-h-[90vh] overflow-y-auto shadow-lg lg:w-2/3">
+          <div className="w-full p-6 bg-white rounded-lg h-auto sm:max-h-[90vh] overflow-y-auto shadow-lg lg:w-2/3">
             <h2 className="mb-4 text-lg font-bold text-center text-black">Add New User</h2>
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <div>

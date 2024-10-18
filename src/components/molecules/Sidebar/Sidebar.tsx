@@ -55,7 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar }) => {
 
     const generalMenuItems = [
         ...(UserType !== 'Customer' ? [{ name: 'Users', icon: <FaUser />, path: '/users' }] : []),
-        ...(UserType !== 'Customer' ? [{ name: 'Devices', icon: <BsCpuFill />, path: '/devices' }] : []),
+        { name: 'Devices', icon: <BsCpuFill />, path: '/devices' },
         { name: 'Rules', icon: <FaClipboardList />, path: '/rules' },
         ...(UserType !== 'Customer' ? [{ name: 'Category', icon: <TbCategoryPlus />, path: '/categories' }] : []),
         ...(UserType !== 'Customer' ? [{ name: 'Location', icon: <MdOutlineAddLocationAlt />, path: '/locations' }] : []),

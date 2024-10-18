@@ -104,6 +104,7 @@ const LocationPopup: React.FC<LocationProps> = ({ onClose, locationData , fetchD
                     <input
                         type="text"
                         name="category"
+                        placeholder="Location"
                         value={location.location}
                         onChange={(e) => setLocation({...location , location:e.target.value})}
                         className="w-full p-2 mt-2 text-[12px] border rounded-md"
@@ -113,7 +114,8 @@ const LocationPopup: React.FC<LocationProps> = ({ onClose, locationData , fetchD
                     <label className='w-full font-semibold text-[13px]'>Description</label>
                     <input
                         type="text"
-                        name="category"
+                        name="description"
+                        placeholder="Description"
                         value={location.description}
                         onChange={(e) => setLocation({...location , description:e.target.value})}
                         className="w-full p-2 mt-2 text-[12px] border rounded-md"
