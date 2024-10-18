@@ -260,7 +260,7 @@ const saveOrderToLocalStorage = (data: DeviceData[]) => {
         <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={filteredData.map((item) => item.ruleId)} strategy={verticalListSortingStrategy}>
             <div className={`flex flex-wrap w-full min-h-[100vh] gap-5 overflow-y-auto z-0 
-              ${filteredData.length >= 3 ? "lg:justify-start md:justify-center" : filteredData.length < 3 ? "lg:justify-between" : ""}`}>
+              ${filteredData.length >= 3 ? "lg:justify-start md:justify-center" : filteredData.length < 3 ? "lg:justify-start" : ""}`}>
               {filteredData.map((d) => (
                 <div key={d.ruleId} className="z-0 mt-4 sm:w-full md:w-auto">
                   <SortableItem id={d.ruleId} deviceData={d} />
@@ -271,7 +271,7 @@ const saveOrderToLocalStorage = (data: DeviceData[]) => {
         </DndContext>
         ) : (
           <div className={`flex flex-wrap w-full min-h-[100vh] gap-5 overflow-y-auto z-0 
-            ${filteredData.length >= 3 ? "lg:justify-start md:justify-center" : filteredData.length < 3 ? "lg:justify-between" : ""}`}>
+            ${filteredData.length >= 3 ? "lg:justify-start md:justify-center" : filteredData.length < 3 ? "lg:justify-start" : ""}`}>
             {filteredData.map((d) => (
               <div key={d.ruleId} className="z-0 flex justify-center w-full mt-4 md:w-auto md:justify-start">
                 <SummaryCard
