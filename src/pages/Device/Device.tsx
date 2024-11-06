@@ -3,7 +3,6 @@ import { PageHeader } from '../../components/molecules';
 import { useTheme } from '../../context/Theme/ThemeContext';
 import { CircularProgressBar, Circle, LineChart , DataTable } from '../../components/molecules';
 import { Images } from '../../constants';
-import * as XLSX from 'xlsx';
 import { GridColDef } from '@mui/x-data-grid';
 import { IoMdClose } from "react-icons/io";
 import Swal from 'sweetalert2';
@@ -11,6 +10,7 @@ import { useBaseUrl } from '../../context/BaseUrl/BaseUrlContext';
 import axios from 'axios';
 import { useToast } from '../../context/Alert/AlertContext';
 import { useNavigate, useParams } from 'react-router-dom';
+import DownloadExcel from '../../helper/DownloadXcel';
 
 type Device = {
   _id:string,
@@ -60,6 +60,16 @@ type Location = {
   location:string
 }
 
+type LineChartData = {
+  dateCreated: string,
+  totalWeight: number,
+  batteryPercentage: number,
+  batteryVoltage: number,
+  itemCount: number,
+  itemCountIncreaseBy: number,
+  itemCountDecreaseBy: number
+}
+
 // ---------- Table Columns ----------
 const columns:GridColDef[] = [
   {
@@ -99,63 +109,6 @@ const columns:GridColDef[] = [
   },
 ];
 
-// ---------- Linechart test data for different time ranges ----------
-const dataLineChart = {
-  current:{name: 'Now', uv: 400, pv: 240, amt: 240},
-  day: [
-    { name: '12 AM', uv: 400, pv: 240, amt: 240 },
-    { name: '3 AM', uv: 300, pv: 138, amt: 210 },
-    { name: '6 AM', uv: 500, pv: 480, amt: 320 },
-    { name: '9 AM', uv: 700, pv: 680, amt: 390 },
-    { name: '12 PM', uv: 900, pv: 840, amt: 420 },
-    { name: '3 PM', uv: 650, pv: 480, amt: 350 },
-    { name: '6 PM', uv: 450, pv: 320, amt: 260 },
-    { name: '9 PM', uv: 300, pv: 150, amt: 180 },
-  ],
-  week: [
-    { name: 'Mon', uv: 1400, pv: 1200, amt: 1200 },
-    { name: 'Tue', uv: 1800, pv: 1700, amt: 1500 },
-    { name: 'Wed', uv: 2200, pv: 1900, amt: 1700 },
-    { name: 'Thu', uv: 1600, pv: 1400, amt: 1400 },
-    { name: 'Fri', uv: 2500, pv: 2200, amt: 2000 },
-    { name: 'Sat', uv: 2900, pv: 2600, amt: 2300 },
-    { name: 'Sun', uv: 3200, pv: 2900, amt: 2700 },
-  ],
-  month: [
-    { name: 'Week 1', uv: 5000, pv: 4000, amt: 4500 },
-    { name: 'Week 2', uv: 7000, pv: 6000, amt: 5800 },
-    { name: 'Week 3', uv: 8000, pv: 6800, amt: 6500 },
-    { name: 'Week 4', uv: 9500, pv: 7500, amt: 7200 },
-  ],
-  threeMonths: [
-    { name: 'Month 1', uv: 21000, pv: 19000, amt: 19500 },
-    { name: 'Month 2', uv: 23000, pv: 21000, amt: 21500 },
-    { name: 'Month 3', uv: 25000, pv: 23000, amt: 22500 },
-  ],
-  sixMonths: [
-    { name: 'Month 1', uv: 31000, pv: 28000, amt: 29000 },
-    { name: 'Month 2', uv: 35000, pv: 32000, amt: 31000 },
-    { name: 'Month 3', uv: 37000, pv: 34000, amt: 35000 },
-    { name: 'Month 4', uv: 40000, pv: 38000, amt: 37000 },
-    { name: 'Month 5', uv: 42000, pv: 39000, amt: 41000 },
-    { name: 'Month 6', uv: 45000, pv: 42000, amt: 43000 },
-  ],
-  year: [
-    { name: 'Jan', uv: 50000, pv: 46000, amt: 47000 },
-    { name: 'Feb', uv: 52000, pv: 49000, amt: 48000 },
-    { name: 'Mar', uv: 55000, pv: 51000, amt: 50000 },
-    { name: 'Apr', uv: 58000, pv: 53000, amt: 52000 },
-    { name: 'May', uv: 60000, pv: 55000, amt: 54000 },
-    { name: 'Jun', uv: 63000, pv: 58000, amt: 57000 },
-    { name: 'Jul', uv: 66000, pv: 61000, amt: 60000 },
-    { name: 'Aug', uv: 70000, pv: 64000, amt: 63000 },
-    { name: 'Sep', uv: 72000, pv: 67000, amt: 65000 },
-    { name: 'Oct', uv: 75000, pv: 70000, amt: 68000 },
-    { name: 'Nov', uv: 77000, pv: 72000, amt: 70000 },
-    { name: 'Dec', uv: 80000, pv: 75000, amt: 73000 },
-  ],
-};
-
 type TimeRange = 'day' | 'week' | 'month' | 'threeMonths' | 'sixMonths' | 'year';
 
 const Device: React.FC = () => {
@@ -187,6 +140,7 @@ const Device: React.FC = () => {
   const { baseUrl } = useBaseUrl();
   const savedUserData = JSON.parse(localStorage.getItem('userData') || '{}');
   const Token = savedUserData.accessToken;
+  const UserType = savedUserData.userType;
   const [isOpen, setIsOpen] = useState(false);
   const { notify} = useToast();
   const navigate =  useNavigate();
@@ -239,15 +193,27 @@ const Device: React.FC = () => {
     batteryVoltage:number,
     batteryPercentage:number,
     totalWeight:number,
-    itemCount:number
+    itemCount:number,
+    itemCountIncreaseBy:number,
+    itemCountDecreaseBy:number
   }>({
     batteryPercentage:0,
     batteryVoltage:0,
     totalWeight:0,
-    itemCount:0
+    itemCount:0,
+    itemCountIncreaseBy:0,
+    itemCountDecreaseBy:0
   })
   const [categories , setCategories] = useState<Category[]>([])
   const [locations , setLocations] = useState<Location[]>([]);
+  const [todayData , setTodayData] = useState<LineChartData[]>([]);
+  const [weekData , setWeekData] = useState<LineChartData[]>([]);
+  const [monthData , setMonthData] = useState<LineChartData[]>([]);
+  const [threeMonthsData , setThreeMonthsData] = useState<LineChartData[]>([]);
+  const [sixMonthsData , setSixMonthsData] = useState<LineChartData[]>([]);
+  const [yearData , setYearData] = useState<LineChartData[]>([]);
+
+  console.log(todayData);
 
   useEffect(() => {
     if(!Token){
@@ -262,7 +228,7 @@ const Device: React.FC = () => {
 
   const FetchData = async() => {
     try {
-      const [usersResponse, rulesResponse , deviceResponse , deviceDetailsResponse] = await Promise.all([
+      const [usersResponse, rulesResponse , deviceResponse , deviceDetailsResponse , lineCharDataResponse] = await Promise.all([
         axios.get(`${baseUrl}/users/all`, {
           headers: {
             token: `Bearer ${Token}`,
@@ -283,9 +249,20 @@ const Device: React.FC = () => {
           headers: {
             token: `Bearer ${Token}`,
           },
+        }),
+        axios.get(`${baseUrl}/chart/line-chart/${deviceId}`, {
+          headers: {
+            token: `Bearer ${Token}`,
+          },
         })
       ]);
-      if(usersResponse.data.status && rulesResponse.data.status && deviceResponse.data.status &&deviceDetailsResponse.data.status){
+      if(
+        usersResponse.data.status && 
+        rulesResponse.data.status && 
+        deviceResponse.data.status &&
+        deviceDetailsResponse.data.status &&
+        lineCharDataResponse.data.status
+      ){
         setUsers(usersResponse.data.users);
         setRules(rulesResponse.data.rules);  
         setDeviceData(deviceResponse.data.device);
@@ -306,6 +283,12 @@ const Device: React.FC = () => {
             description:deviceResponse.data.device.description,
             message:deviceResponse.data.device.message,
           });
+          setTodayData(lineCharDataResponse.data.data.today)
+          setWeekData(lineCharDataResponse.data.data.thisWeek)
+          setMonthData(lineCharDataResponse.data.data.thisMonth)
+          setThreeMonthsData(lineCharDataResponse.data.data.lastThreeMonths)
+          setSixMonthsData(lineCharDataResponse.data.data.lastSixMonths)
+          setYearData(lineCharDataResponse.data.data.lastYear)
       }else{
         notify(deviceResponse.data.error.message , 'error');
       }
@@ -325,11 +308,14 @@ const Device: React.FC = () => {
         if(response.data.status){
           if (response.data.data && response.data.data.length > 0) {
             const deviceDetail = response.data.data[0];
+            console.log("Device data",deviceDetail);
             setDeviceDetails({
               batteryVoltage: Number(deviceDetail.batteryVoltage),
               batteryPercentage: Number(deviceDetail.batteryPercentage),
               itemCount: Number(deviceDetail.itemCount),
               totalWeight: Number(deviceDetail.totalWeight),
+              itemCountIncreaseBy: Number(deviceDetail.itemCountIncreaseBy),
+              itemCountDecreaseBy: Number(deviceDetail.itemCountDecreaseBy)
             });
           }
         }else{
@@ -340,7 +326,7 @@ const Device: React.FC = () => {
       notify("An unexpected error occurred. Please try again later.", "error");
     }
   }
-
+  console.log("Device Details" , deviceDetails);
   const GetCategories = async() => {
     try {
       const response = await axios.get(
@@ -395,46 +381,6 @@ const Device: React.FC = () => {
     if (e.target.files && e.target.files.length > 0) {
       setImageFile(e.target.files[0]);
     }
-  };
-
-  // Function to handle downloading the Excel file
-  const downloadExcelFile = () => {
-    const dataToExport = dataLineChart[selectedRange];
-    const ws = XLSX.utils.json_to_sheet(dataToExport);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Data');
-    XLSX.writeFile(wb, `DeviceData_${selectedRange}.xlsx`);
-  };
-
-  const downloadCurrentDetails = () => {
-    // Prepare data for export
-    const deviceData = [
-      {
-        'Battery Voltage': deviceDetails.batteryVoltage,
-        'Battery Percentage': deviceDetails.batteryPercentage,
-        'Total Weight': deviceDetails.totalWeight,
-        'Item Count': deviceDetails.itemCount,
-      },
-    ];
-  
-    // Create a new workbook and add the device data
-    const worksheet = XLSX.utils.json_to_sheet(deviceData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Device Details');
-  
-    // Convert the workbook to binary data
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  
-    // Create a blob from the binary data
-    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-  
-    // Create a link and trigger a download
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.setAttribute('download', 'device_details.xlsx');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   // Handle form submission
@@ -636,6 +582,74 @@ const Device: React.FC = () => {
     }
   }
 
+  // ---------- Function to current details ----------
+  const downloadCurrentDetails = async() => {
+    const data = {
+      id:deviceData._id,
+      title:deviceData.title,
+      category:deviceData.category,
+      assignProduct:deviceData.assignProduct,
+      location:deviceData.location,
+      unitWeight:deviceData.unitWeight,
+      minItems:deviceData.minItems,
+      minBatteryPercentage:deviceData.minBatteryPercentage,
+      batteryPercentage:deviceDetails.batteryPercentage,
+      batteryVoltage:deviceDetails.batteryVoltage,
+      totalWeight:deviceDetails.totalWeight,
+      itemCount:deviceDetails.itemCount,
+      itemCountIncreaseBy:deviceDetails.itemCountIncreaseBy,
+      itemCountDecreaseBy: deviceDetails.itemCountDecreaseBy,
+      status:deviceData.status,
+      minBatteryVoltage:deviceData.minBatteryVoltage,
+      refilingStatus:deviceData.refilingStatus,
+      description:deviceData.description,
+      message:deviceData.message,
+    }
+
+    const type = "device_data";
+    const baseUrl = "http://localhost:3300/api"
+
+    await DownloadExcel({data , type , baseUrl})
+  }
+
+  // ---------- Download Excwl File ----------
+  const downloadExcelFile = async() => {
+    const dataSet = 
+    selectedRange === "day" ? todayData :
+    selectedRange === "week" ? weekData :
+    selectedRange === "month" ? monthData :
+    selectedRange === "threeMonths" ? threeMonthsData :
+    selectedRange === "sixMonths" ? sixMonthsData : yearData;
+
+  // Map over the selected data set to add title and deviceId
+  const data = dataSet.map((entry) => ({
+    ...entry,
+    id:deviceData._id,
+    title:deviceData.title,
+    category:deviceData.category,
+    assignProduct:deviceData.assignProduct,
+    location:deviceData.location,
+    unitWeight:deviceData.unitWeight,
+    minItems:deviceData.minItems,
+    minBatteryPercentage:deviceData.minBatteryPercentage,
+    status:deviceData.status,
+    minBatteryVoltage:deviceData.minBatteryVoltage,
+    refilingStatus:deviceData.refilingStatus,
+    description:deviceData.description,
+    message:deviceData.message,
+  }));
+    
+   const  type = selectedRange == "day" ? "today_device_data" :
+                 selectedRange == "week" ? "last_week_device_data" :
+                 selectedRange == "month" ? "last_month_device_data" :
+                 selectedRange == "threeMonths" ? "last_three_months_device_data" :
+                 selectedRange == "sixMonths" ? "last_six_months_device_data" : "last_year_device_data";
+                 
+    const baseUrl = "http://localhost:3300/api";
+
+    await DownloadExcel({data , type , baseUrl});
+  }
+
   return (
     <div className="">
       {/* Page Header */}
@@ -655,6 +669,9 @@ const Device: React.FC = () => {
              <div>
                 <h2 className="mb-4 text-2xl font-semibold text-gray-900">{deviceData.title}</h2>
                 <p className="mb-2 text-gray-600">{deviceData.description}</p>
+                {(UserType === "Admin" || UserType === "Moderator") && (
+                  <p className="text-gray-600"><strong>Id:</strong> {deviceData._id ? deviceData._id : "None"}</p>
+                )}
                 <p className="text-gray-600"><strong>Assigned Product:</strong> {deviceData.assignProduct ? deviceData.assignProduct : "None"}</p>
                 <p className="text-gray-600"><strong>Location:</strong> {deviceData.location ? deviceData.location : "None"}</p>
                 <p className="text-gray-600"><strong>Unit Weight:</strong> {deviceData.unitWeight ? `${deviceData.unitWeight}g` : "0g"}</p>
@@ -770,7 +787,12 @@ const Device: React.FC = () => {
               </button>
             </div>
            </div>
-            <LineChart data={dataLineChart[selectedRange]} />
+            <LineChart data={selectedRange === "day" ? todayData : 
+              selectedRange == "week" ? weekData :
+                selectedRange == "month" ? monthData :
+                selectedRange == "threeMonths" ? threeMonthsData :
+                selectedRange == "sixMonths" ? sixMonthsData : yearData
+              } />
           </div>
         </div>
         </div>

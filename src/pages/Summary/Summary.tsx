@@ -9,19 +9,26 @@ import axios from 'axios';
 import { useToast } from '../../context/Alert/AlertContext';
 import { colors } from '@mui/material';
 import { useTheme } from '../../context/Theme/ThemeContext';
-import * as XLSX from 'xlsx';
+import DownloadExcel from '../../helper/DownloadXcel';
 
 type DeviceData = {
   id: string;
   ruleId:string;
   deviceTitle: string;
+  assignedProduct:string,
+  category:string;
   itemCount: number;
   minItemCount: number;
-  maxItemCount: number;
+  minBatteryPercentage: string;
+  minBatteryVoltage:string;
   unitWeight: number;
   location: string;
   status: string;
   batteryPercentage: number;
+  batteryVoltage:number;
+  itemCountDecreaseBy: number;
+  itemCountIncreaseBy: number;
+  totalWeight:number;
   refilingStatus: string;
   description: string;
   message: string;
@@ -30,7 +37,7 @@ type DeviceData = {
 // SortableItem component using dnd-kit
 interface SortableItemProps {
   id: string;
-  deviceData: DeviceData;
+  datas: DeviceData;
 }
 
 const Summary: React.FC = () => {
@@ -44,15 +51,24 @@ const Summary: React.FC = () => {
   const { notify } = useToast();
   const [deviceData, setDeviceData] = useState<DeviceData[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>(''); // State to capture search input
-  const [filteredData, setFilteredData] = useState<DeviceData[]>(deviceData); // State for filtered data
+  const [filteredData, setFilteredData] = useState<DeviceData[]>([]); // State for filtered data
   const [isDragEnabled, setIsDragEnabled] = useState<boolean>(false); // State for enabling/disabling drag-and-drop
 
   useEffect(() => {
     if(!Token){
       navigate("/");
-    }else{
-      FetchData();
     }
+  },[]);
+
+  useEffect(() => {
+    FetchData();
+
+    const intervalId = setInterval(() => {
+      FetchData();
+    }, 600000);
+
+    // Clear the interval when the component is unmounted
+    return () => clearInterval(intervalId);
   },[])
 
   const FetchData = async() => {
@@ -65,7 +81,7 @@ const Summary: React.FC = () => {
         user: UserId
       }
     }else{
-      Url = `${baseUrl}/device/all/summary`;
+      Url = `${baseUrl}/device/all/summary/${UserId}`;
       Header = {
         token:`Bearer ${Token}`,
       }
@@ -74,25 +90,32 @@ const Summary: React.FC = () => {
       const response = await axios.get(Url,{
         headers: Header
       });
-      console.log("Url:" ,Url);
+      console.log("Url:" , Url);
+      console.log("Responsee Data: ",response.data);
       if(response.data.status){
         const devices: DeviceData[] = response.data.devices.map((device:any) => ({
           ruleId:device.ruleId,
           id: device._id,
           deviceTitle: device.title,
-          itemCount: Number(device.deviceData.itemCount),
+          category:device.category,
+          assignedProduct:device.assignedProduct,
+          itemCount: Number(device?.deviceData?.itemCount),
           minItemCount: Number(device.minItems),
           unitWeight: Number(device.unitWeight),
+          minBatteryPercentage: device.minBatteryPercentage,
+          minBatteryVoltage: device.minBatteryVoltage,
+          batteryPercentage: Number(device?.deviceData?.batteryPercentage),
+          batteryVoltage: Number(device?.deviceData?.batteryVoltage),
+          itemCountDecreaseBy: Number(device?.deviceData?.itemCountDecreaseBy),
+          itemCountIncreaseBy: Number(device?.deviceData?.itemCountIncreaseBy),
+          totalWeight: Number(device?.deviceData?.totalWeight),
           location: device.location,
           status: device.status,
-          batteryPercentage: device.deviceData.batteryPercentage,
           refilingStatus: device.refilingStatus,
           description: device.description,
           message: device.message,
         }));
         setDeviceData(devices);
-        //setFilteredData(devices);
-        console.log("New Device Test: ",devices);
       }else{
         notify(response.data.error.message , 'error');
       }
@@ -102,24 +125,28 @@ const Summary: React.FC = () => {
     }
   };
 
-  console.log("Filter Data: ",filteredData);
+  const saveOrder = async(order:any) => {
+    try {
+      const data = {
+        userId: UserId,
+        orderList:order
+      }
 
-  // UseEffect to load data from localStorage on component mount
-  useEffect(() => {
-    const savedOrder = localStorage.getItem('deviceOrder');
-    console.log(savedOrder);
-    if (savedOrder) {
-      const parsedOrder = JSON.parse(savedOrder) as string[];
-      const orderedData = parsedOrder
-        .map((id) => deviceData.find((device) => device?.ruleId === id)) // Handle undefined values
-        .filter((device): device is DeviceData => device !== undefined); // Ensure device is defined
-      setDeviceData(orderedData);
-      setFilteredData(orderedData); // Set filteredData when order is loaded
+      const response = await axios.post(`${baseUrl}/dnd/create-or-update` , data , {
+        headers:{
+          token: `Bearer ${Token}`
+        }
+      });
+
+      if(response.data.status){
+        console.log(response.data.success.message);
+      }
+    } catch (error) {
+      console.error("save order failed!");
     }
-  }, []);
-  
+  }    
 
-  const SortableItem: React.FC<SortableItemProps> = ({ id, deviceData }) => {
+  const SortableItem: React.FC<SortableItemProps> = ({ id, datas }) => {
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
   
     const style: React.CSSProperties = {
@@ -130,31 +157,28 @@ const Summary: React.FC = () => {
     return (
       <div ref={setNodeRef} style={style} {...attributes} {...listeners} className='z-0'>
         <SummaryCard
-          id={deviceData.id}
-          deviceTitle={deviceData.deviceTitle ?? 'Unknown Device'}
-          itemCount={deviceData.itemCount ?? 0}
-          minCount={deviceData.minItemCount ?? 0}
-          unitWeight={deviceData.unitWeight ?? 0}
-          location={deviceData.location ?? 'Unknown Location'}
-          status={deviceData.status ?? 'Unknown'}
-          batteryPercentage={deviceData.batteryPercentage ?? 0}
-          refilingStatus={deviceData.refilingStatus ?? 'None'}
-          description={deviceData.description ?? 'No description available'}
-          message={deviceData.message ?? "None"}
+          id={datas.id}
+          deviceTitle={datas.deviceTitle ?? 'Unknown Device'}
+          itemCount={datas.itemCount ?? 0}
+          minCount={datas.minItemCount ?? 0}
+          unitWeight={datas.unitWeight ?? 0}
+          location={datas.location ?? 'Unknown Location'}
+          status={datas.status ?? 'Unknown'}
+          batteryPercentage={datas.batteryPercentage ?? 0}
+          refilingStatus={datas.refilingStatus ?? 'None'}
+          description={datas.description ?? 'No description available'}
+          message={datas.message ?? "None"}
           isDrag={isDragEnabled}
         />
       </div>
     );
   };
   
-
   // Save the deviceData order to localStorage when it changes
-  // Save the deviceData order to localStorage when it changes
-const saveOrderToLocalStorage = (data: DeviceData[]) => {
+const saveOrderToLocalStorage = async(data: DeviceData[]) => {
   const validData = data.filter((device) => device !== undefined); // Filter out undefined values
-  const order = validData.map((device) => device.id);
-  console.log("Order: ", order);
-  localStorage.setItem('deviceOrder', JSON.stringify(order));
+  const order = validData.map((device) => device.ruleId);
+  await saveOrder(order);
 };
 
 
@@ -162,15 +186,15 @@ const saveOrderToLocalStorage = (data: DeviceData[]) => {
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
-      setDeviceData((items) => {
-        const oldIndex = items.findIndex((item) => item.ruleId === String(active.id));
-        const newIndex = items.findIndex((item) => item.ruleId === String(over.id));
+      setFilteredData((items) => {
+        const oldIndex = items.findIndex((item) => item.ruleId === active.id);
+        const newIndex = items.findIndex((item) => item.ruleId === over.id);
         const newItems = arrayMove(items, oldIndex, newIndex);
-        saveOrderToLocalStorage(newItems); // Save new order to localStorage
+        saveOrderToLocalStorage(newItems); 
         return newItems;
       });
     }
-  };  
+  }; 
 
   // Handler for search input change
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -188,37 +212,38 @@ const saveOrderToLocalStorage = (data: DeviceData[]) => {
     setFilteredData(filtered);
   }, [searchTerm, deviceData]);
 
-  const downloadExcelFile = () => {
+  const downloadExcelFile = async() => {
     if (deviceData.length === 0) {
       notify("No data available to download.", "warning");
       return;
     }
   
-    // Map the deviceData into a format compatible with Excel
-    const excelData = deviceData.map((device) => ({
-      'Device Title': device.deviceTitle,
-      'Item Count': device.itemCount,
-      'Min Item Count': device.minItemCount,
-      'Unit Weight': device.unitWeight,
-      'Location': device.location,
-      'Status': device.status,
-      'Battery Percentage': `${device.batteryPercentage}%`,
-      'Refilling Status': device.refilingStatus,
-      'Description': device.description,
-      'Message': device.message
+    const data = deviceData.map((device) => ({
+      id: device.id,
+      title: device.deviceTitle,
+      category: device.category,
+      assignProduct: device.assignedProduct,
+      location: device.location,
+      unitWeight: device.unitWeight,
+      minItems: device.minItemCount,
+      minBatteryPercentage: device.minBatteryPercentage,
+      batteryPercentage: device.batteryPercentage,
+      batteryVoltage: device.batteryVoltage,
+      totalWeight: device.totalWeight,
+      itemCount: device.itemCount,
+      itemCountIncreaseBy: device.itemCountIncreaseBy,
+      itemCountDecreaseBy: device.itemCountDecreaseBy,
+      status: device.status,
+      minBatteryVoltage: device.minBatteryVoltage,
+      refilingStatus: device.refilingStatus,
+      description: device.description,
+      message: device.message,
     }));
-  
-    // Create a new worksheet
-    const worksheet = XLSX.utils.json_to_sheet(excelData);
-  
-    // Create a new workbook
-    const workbook = XLSX.utils.book_new();
-  
-    // Append the worksheet to the workbook
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Device Summary');
-  
-    // Generate the Excel file and trigger download
-    XLSX.writeFile(workbook, 'Device_Summary.xlsx');
+
+    const type = "all_devices_data";
+    const baseUrl = "http://localhost:3300/api";
+
+    await DownloadExcel({data , type , baseUrl})    
   }
 
   return (
@@ -263,7 +288,7 @@ const saveOrderToLocalStorage = (data: DeviceData[]) => {
               ${filteredData.length >= 3 ? "lg:justify-start md:justify-center" : filteredData.length < 3 ? "lg:justify-start" : ""}`}>
               {filteredData.map((d) => (
                 <div key={d.ruleId} className="z-0 mt-4 sm:w-full md:w-auto">
-                  <SortableItem id={d.ruleId} deviceData={d} />
+                  <SortableItem id={d.ruleId} datas={d} />
                 </div>
               ))}
             </div>
@@ -293,7 +318,7 @@ const saveOrderToLocalStorage = (data: DeviceData[]) => {
           </div>
         )
       ) : (
-        <div style={{color:colors.grey[100]}} className='mt-5'>No devices found.</div>
+        <div style={{color:colors.grey[100]}} className='mt-10 text-lg font-semibold'>No devices found...</div>
       )}
     </div>
   );

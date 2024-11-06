@@ -38,7 +38,7 @@ const columns: GridColDef[] = [
   {
     field: 'image',
     headerName: 'Image',
-    width: 150,
+    maxWidth: 100,
     renderCell: (params: any) => {
       return (
         <div className="flex items-center w-full h-full space-x-3">
@@ -77,7 +77,7 @@ const columns: GridColDef[] = [
     field: 'emailStatus',
     headerName: 'Send Email',
     width:100,
-    align:"center"
+    align:"left"
   },
   {
     field: 'dateCreated',

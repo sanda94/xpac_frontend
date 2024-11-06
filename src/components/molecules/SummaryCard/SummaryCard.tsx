@@ -90,7 +90,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
                   ${!isDrag ? "cursor-pointer hover:bg-orange-200" : ""}
                 `}
             >
-              More Details
+              More
             </button>
           </div>
         </div>

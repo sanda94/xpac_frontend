@@ -228,37 +228,44 @@ const DataTable: React.FC<Props> = (props: Props) => {
 
   return (
     <div className="z-0 dataTable">
-      <DataGrid
-        className="dataGrid"
-        rows={props.rows}
-        getRowId={(row) => row._id}
-        columns={[...props.columns, actionColumn]}
-        initialState={{
-          pagination: {
+     <DataGrid
+    className="dataGrid"
+    rows={props.rows}
+    getRowId={(row) => row._id}
+    columns={[
+        ...props.columns.map((column) => ({
+            ...column,
+            flex: 1, // Apply flex to make columns responsive
+        })),
+        actionColumn,
+    ]}
+    initialState={{
+        pagination: {
             paginationModel: {
-              pageSize: 10,
+                pageSize: 10,
             },
-          },
-          filter: {
+        },
+        filter: {
             filterModel: {
-              items: [],
-              quickFilterValues: [""],
+                items: [],
+                quickFilterValues: [""],
             },
-          },
-        }}
-        slots={{ toolbar: GridToolbar }}
-        slotProps={{
-          toolbar: {
+        },
+    }}
+    slots={{ toolbar: GridToolbar }}
+    slotProps={{
+        toolbar: {
             showQuickFilter: true,
             quickFilterProps: { debounceMs: 500 },
             printOptions: { disableToolbarButton: true },
-          },
-        }}
-        pageSizeOptions={[5]}
-        disableRowSelectionOnClick
-        disableDensitySelector
-        style={{ minHeight: "500px" }}
-      />
+        },
+    }}
+    pageSizeOptions={[5]}
+    disableRowSelectionOnClick
+    disableDensitySelector
+    style={{ minHeight: "500px" }}
+/>
+
       {isFormOpen && props.slug === "rules" && (
           <RulePopup 
             ruleData={selectedRuleData} 

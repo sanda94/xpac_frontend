@@ -29,7 +29,7 @@ const CircularProgressBar: React.FC<CircularProgressBarProps> = ({
   const [ShowCurrentValue, setCurrentValue] = useState<number>(0);
   const [BarColor, setBarColor] = useState("#e74c3c");
   const [DashOffSet, setDashOffSet] = useState(0);
-console.log(CurrentValue);
+  //console.log(CurrentValue);
   const IntervalTime: number = 30; // here use mili seconds
   //const [AnimationTime,setAnimationTime] = useState(30);
 
@@ -54,7 +54,7 @@ console.log(CurrentValue);
     const IntervalId: number = setInterval(() => {
       setCurrentValue((prevValue) => {
         const NewValue = prevValue + Increment;
-        console.log(NewValue);
+        //console.log(NewValue);
         if (Math.abs(NewValue - value) <= Math.abs(Increment)) {
           clearInterval(IntervalId);
           return value;

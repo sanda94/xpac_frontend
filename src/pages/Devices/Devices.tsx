@@ -325,9 +325,13 @@ const CreateDevice = async() => {
 
 const columns: GridColDef[] = [
   {
+    field: '_id',
+    headerName: 'Id',
+    minWidth:250
+  },
+  {
     field: 'imageTitle',
     headerName: 'Device',
-    maxWidth:300,
     minWidth:150,
     renderCell: (params: any) => {
       return (
@@ -347,70 +351,59 @@ const columns: GridColDef[] = [
   {
     field: 'assignProduct',
     headerName: 'Assign Product',
-    maxWidth:250,
     minWidth:200
   },
   {
     field: 'location',
     headerName: 'Location',
-    maxWidth:250,
     minWidth:200
   },
   {
     field: 'category',
     headerName: 'Category',
-    maxWidth:200,
     minWidth:150
   },
   {
     field: 'unitWeight',
     headerName: 'Unit Weight (g)',
-    maxWidth:200,
     minWidth:150,
     align:"center"
   },
   {
     field: 'minItems',
     headerName: 'Min Items Count',
-    maxWidth:200,
     minWidth:150,
     align:"center"
   },
   {
     field: 'minBatteryPercentage',
     headerName: 'Min Battery Percentage (%)',
-    maxWidth:200,
     minWidth:200,
     align:"center"
   },
   {
     field: 'minBatteryVoltage',
     headerName: 'Min Battery Voltage (V)',
-    maxWidth:200,
     minWidth:165,
     align:"center"
   },
   {
     field: 'refilingStatus',
     headerName: 'Refiling Status',
-    maxWidth:200,
     minWidth:150
   },
   {
     field: 'description',
     headerName: 'Description',
-    maxWidth:200,
     minWidth:150
   },
   {
     field: 'message',
     headerName: 'Message',
-    maxWidth:200,
     minWidth:150
   },{
     field: "status",
     headerName: "Active Status",
-    maxWidth:200,
     minWidth:150,
     renderCell: (params: any) => {
       const isActive = params.row.status === "Active";
@@ -418,7 +411,7 @@ const columns: GridColDef[] = [
         <div className='flex items-center justify-center w-full h-full'>
           <button
             onClick={() => HandleStatus(params.row._id, isActive ? "Inactive" : "Active")}
-            className={`px-3 py-2 h-[62%] min-w-[85px] flex items-center text-[12px] justify-center rounded-md transition-colors duration-300 text-black ${
+            className={`px-3 py-2 h-[62%] min-w-[85px] w-full flex items-center text-[12px] justify-center rounded-md transition-colors duration-300 text-black ${
               isActive ? 'bg-green-500 hover:bg-green-400' : 'bg-red-500 hover:bg-red-400'
             }`}
           >

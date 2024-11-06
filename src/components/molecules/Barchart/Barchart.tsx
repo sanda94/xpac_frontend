@@ -1,49 +1,53 @@
-import React from 'react';
+import React , { useEffect, useState } from 'react';
 import { BarChart, Bar, ResponsiveContainer, Tooltip, XAxis, YAxis, Rectangle } from 'recharts';
 import { useTheme } from '../../../context/Theme/ThemeContext';
+import { useNavigate } from 'react-router-dom';
+import { useBaseUrl } from '../../../context/BaseUrl/BaseUrlContext';
+import axios from 'axios';
 
-// ---------- Sample test data ----------
-const data = [
-    {
-      name: 'Device 1',
-      itemCount: 30,
-      batteryPercentage: 66,
-      amt: 2400,
-    },
-    {
-      name: 'Device 2',
-      itemCount: 15,
-      batteryPercentage: 98,
-      amt: 2210,
-    },
-    {
-      name: 'Device 3',
-      itemCount: 28,
-      batteryPercentage: 45,
-      amt: 2290,
-    },
-    {
-      name: 'Device 4',
-      itemCount: 32,
-      batteryPercentage: 18,
-      amt: 2000,
-    },
-    {
-      name: 'Device 5',
-      itemCount: 8,
-      batteryPercentage: 76,
-      amt: 2181,
-    },
-  ];
+  type Data = {
+    title:string,
+    itemCount:number,
+    batteryPercentage:string
+  }
 
 const Barchart:React.FC = () => {
     const {colors} = useTheme();
+    const savedUserData = JSON.parse(localStorage.getItem('userData') || '{}');
+    const Token = savedUserData.accessToken;
+    const navigate = useNavigate();
+    const { baseUrl } = useBaseUrl();
+    const [data , setData] = useState<Data[]>([]);
+
+    useEffect(() => {
+      if(!Token){
+        navigate("/");
+      }else{
+        FetchData();
+      }
+    },[Token]);
+  
+    const FetchData = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/chart/bar-chart`, {
+            headers: {
+              token: `Bearer ${Token}`,
+            },
+          })
+
+        if(response.data.status){
+          setData(response.data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching data", error);
+      }
+    };
   return (
     
         <ResponsiveContainer width="100%" height={300}>
             <BarChart width={150} height={40} data={data}>
               <XAxis 
-                  dataKey="name" 
+                  dataKey="title" 
                   tick={{ fill: colors.grey[100] }}
                   axisLine={{stroke:colors.grey[100]}}/>
               <YAxis 
@@ -60,7 +64,7 @@ const Barchart:React.FC = () => {
                   name="Items Count"
               />
               <Bar 
-                  dataKey="batteryPercentage" 
+                  dataKey="batteryPercentage"
                   fill={colors.greenAccent[400]}
                   activeBar={<Rectangle fill='gold' stroke='gold' />}
                   name="Battery Percentage" 

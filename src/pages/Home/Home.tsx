@@ -6,8 +6,11 @@ import { useNavigate } from 'react-router-dom';
 import { useBaseUrl } from '../../context/BaseUrl/BaseUrlContext';
 import axios from 'axios';
 
-type Users = {
-  userType:string;
+type Counts = {
+  adminCount:string,
+  modCount:string,
+  customerCount:string,
+  deviceCount:string
 }
 
 const Home: React.FC = () => {
@@ -16,8 +19,7 @@ const Home: React.FC = () => {
   const { colors } = useTheme();
   const navigate = useNavigate();
   const { baseUrl } = useBaseUrl();
-  const [users , setUsers] = useState<Users[]>([]);
-  const [device , setDevices] = useState([]); 
+  const [counts , setCounts] = useState<Counts>();
 
   if (colors) {
     document.documentElement.style.setProperty('--border-color', colors.grey[100]);
@@ -34,33 +36,18 @@ const Home: React.FC = () => {
 
   const FetchData = async () => {
     try {
-      const [userResponse, deviceResponse] = await Promise.all([
-        axios.get(`${baseUrl}/users/all`, {
+      const countsResponse = await axios.get(`${baseUrl}/summary/count`, {
           headers: {
             token: `Bearer ${Token}`,
           },
-        }),
-        axios.get(`${baseUrl}/device/all`, {
-          headers: {
-            token: `Bearer ${Token}`,
-          },
-        }),
-      ]);
-
-      if (userResponse.data.status && deviceResponse.data.status) {
-        setUsers(userResponse.data.users);   // Correct: Set users
-        setDevices(deviceResponse.data.devices);   // Correct: Set devices
+        })
+      if (countsResponse.data.status) {
+        setCounts(countsResponse.data.data);
       }
     } catch (error) {
       console.error("Error fetching data", error);
     }
   };
-
-  const totalCustomers = users.filter(user => user.userType === 'Customer').length;
-  const totalAdmins = users.filter(user => user.userType === 'Admin').length;
-  const totalModerators = users.filter(user => user.userType === 'Moderator').length;
-  const totalDevices = device.length;
-
 
   return (
     <div style={{ color: colors.grey[100] }}>
@@ -75,7 +62,7 @@ const Home: React.FC = () => {
                 viewBox="0 0 24 24" 
                 strokeWidth="1.5" 
                 stroke="currentColor" 
-                className="w-[50px] h-[50px]">
+                className="min-w-[50px] min-h-[50px] w-[50px] h-[50px]">
                 <path 
                   strokeLinecap="round" 
                   strokeLinejoin="round" 
@@ -84,7 +71,7 @@ const Home: React.FC = () => {
             
             <span className='text-md'>Total Customers</span>
           </div>
-          <span className='text-5xl font-bold text-center lg:text-left' style={{ color: colors.greenAccent[400] }}>{totalCustomers < 10 ? `0${totalCustomers}` : totalCustomers}</span>
+          <span className='text-5xl font-bold text-center lg:text-left' style={{ color: colors.greenAccent[400] }}>{counts?.customerCount}</span>
         </div>
         {/* Totle Admins */}
         <div className="flex flex-col justify-between row-span-3 p-5 transition-all duration-300 rounded-lg box hover:scale-105">
@@ -95,7 +82,7 @@ const Home: React.FC = () => {
                 viewBox="0 0 24 24" 
                 strokeWidth="1.5" 
                 stroke="currentColor" 
-                className="w-[50px] h-[50px]">
+                className="min-w-[50px] min-h-[50px] w-[50px] h-[50px]">
                 <path 
                   strokeLinecap="round" 
                   strokeLinejoin="round" 
@@ -104,7 +91,7 @@ const Home: React.FC = () => {
             
             <span className='text-md'>Total Admins</span>
           </div>
-          <span className='text-5xl font-bold text-center lg:text-left' style={{ color: colors.greenAccent[400] }}>{totalAdmins < 10 ? `0${totalAdmins}` : totalAdmins}</span>
+          <span className='text-5xl font-bold text-center lg:text-left' style={{ color: colors.greenAccent[400] }}>{counts?.adminCount}</span>
         </div>
         {/* Totle Moderators */}
         <div className="flex flex-col justify-between row-span-3 p-5 transition-all duration-300 rounded-lg box hover:scale-105">
@@ -115,13 +102,13 @@ const Home: React.FC = () => {
               viewBox="0 0 24 24" 
               strokeWidth="1.5" 
               stroke="currentColor" 
-              className="w-[50px] h-[50px]">
+              className="min-w-[50px] min-h-[50px] w-[50px] h-[50px]">
               <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z" />
             </svg>
  
             <span className='text-md'>Total Moderators</span>
           </div>
-          <span className='text-5xl font-bold text-center lg:text-left' style={{ color: colors.greenAccent[400] }}>{totalModerators < 10 ? `0${totalModerators}` : totalModerators}</span>
+          <span className='text-5xl font-bold text-center lg:text-left' style={{ color: colors.greenAccent[400] }}>{counts?.modCount}</span>
         </div>
         {/* Totle Devices */}
         <div className="flex flex-col justify-between row-span-3 p-5 transition-all duration-300 rounded-lg box hover:scale-105">
@@ -132,7 +119,7 @@ const Home: React.FC = () => {
                 viewBox="0 0 24 24" 
                 strokeWidth="1.5" 
                 stroke="currentColor" 
-                className="w-[50px] h-[50px]">
+                className="min-w-[50px] min-h-[50px] w-[50px] h-[50px]">
                 <path 
                   strokeLinecap="round" 
                   strokeLinejoin="round" 
@@ -141,14 +128,14 @@ const Home: React.FC = () => {
             
             <span className='text-md'>Total Devices</span>
           </div>
-          <span className='text-5xl font-bold text-center lg:text-left' style={{ color: colors.greenAccent[400] }}>{totalDevices < 10 ? `0${totalDevices}` : totalDevices}</span>
+          <span className='text-5xl font-bold text-center lg:text-left' style={{ color: colors.greenAccent[400] }}>{counts?.deviceCount}</span>
         </div>
         <div className="flex flex-col items-center justify-between col-span-1 row-span-6 p-5 rounded-lg lg:col-span-2 md:col-span-2 box ">
           <span 
             className='py-2 font-semibold lg:text-xl' 
             style={{ color: colors.grey[100] }}
-            >Customer Device Count</span>
-            <AreaChartCom id={1}/>
+            >User Device Count</span>
+            <AreaChartCom />
         </div>
         <div className="flex flex-col items-center justify-between col-span-1 row-span-6 p-5 rounded-lg lg:col-span-2 md:col-span-2 box">
           <span 
