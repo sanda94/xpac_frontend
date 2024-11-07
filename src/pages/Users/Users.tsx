@@ -245,10 +245,10 @@ const Users: React.FC = () => {
       notify('Fill all required field before click Save button' , 'error');
       return;
     }else if (!isValidEmail(newUser.emailAddress)) {
-      notify('Please enter a valid Email Address.', 'warning');
+      notify('Please enter a valid Email Address.', 'error');
       return;
     }else if (!isTeleValid(newUser.phoneNumber)) {
-      notify('Please enter a valid Phone Number.', 'warning');
+      notify('Please enter a valid Phone Number.', 'error');
       return;
     }else{ 
     Swal.fire({
