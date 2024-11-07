@@ -62,7 +62,7 @@ const Devices: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     title: '',
-    category:'Category 1',
+    category:'',
     image:null,
     assignProduct:'',
     location:'',
@@ -215,19 +215,42 @@ const Devices: React.FC = () => {
     return numberRegex.test(number);
   };
 
+  const isFloatNumberValid = (number: string) => {
+    const floatRegex = /^\d+(\.\d+)?$/; // Matches integers and floats
+    return floatRegex.test(number);
+  };
+  
+
   const handleFormSubmit = () => {
 
-    // Validate minCounts
+    if(
+        !formData.title || 
+        !formData.assignProduct || 
+        !formData.location || 
+        !formData.unitWeight || 
+        !formData.minItemsCount ||
+        !formData.category ||
+        !formData.status
+      ){
+        notify('Fill all required field before click Save button.', 'error');
+        return;
+      }
+
+    if(formData.unitWeight && !isFloatNumberValid(formData.unitWeight)){
+      notify('Please enter valid unit weight!' , 'error');
+      return;
+    }
+
    if (!isNumberValid(formData.minItemsCount)) {
-        notify('Please enter a valid Minimum Items Count.', 'warning');
+        notify('Please enter a valid Minimum Items Count.', 'error');
         return;
     }
     if (!isNumberValid(formData.minBatteryPercentage)) {
-      notify('Please enter a valid Minimum Battery Percentage.', 'warning');
+      notify('Please enter a valid Minimum Battery Percentage.', 'error');
       return;
   }
-  if (!isNumberValid(formData.minBatteryVoltage)) {
-    notify('Please enter a valid Minimum Battery Voltage.', 'warning');
+  if (!isFloatNumberValid(formData.minBatteryVoltage)) {
+    notify('Please enter a valid Minimum Battery Voltage.', 'error');
     return;
 }
     Swal.fire({
@@ -316,11 +339,29 @@ const CreateDevice = async() => {
       });
       FetchData()
       setIsFormOpen(false);
+      ClearData();
   }
   } catch (error:any) {
     console.log(error);
     notify(error.response.data.error.message, "error"); 
   }
+}
+
+const ClearData = () => {
+  setFormData({
+    title: '',
+    category:'',
+    image:null,
+    assignProduct:'',
+    location:'',
+    unitWeight:'',
+    minItemsCount: '',
+    minBatteryPercentage:'',
+    minBatteryVoltage:'',
+    status:'Active',
+    description: '',
+    message:'',
+  })
 }
 
 const columns: GridColDef[] = [
@@ -466,7 +507,7 @@ const columns: GridColDef[] = [
             <h2 className="mb-6 text-2xl font-semibold text-center">Add New Device</h2>
             <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
             <div>
-                <label htmlFor="title" className="w-full font-semibold text-[13px]  ">Title</label>
+                <label htmlFor="title" className="w-full font-semibold text-[13px]  ">Title <strong className='text-red-500 text-[12px]'>*</strong></label>
                 <input
                   type="text"
                   id="title"
@@ -478,7 +519,7 @@ const columns: GridColDef[] = [
               </div>
               {/* Assigned Product */}
               <div>
-                <label htmlFor="asignProduct" className="w-full font-semibold text-[13px]">Assigned Product</label>
+                <label htmlFor="asignProduct" className="w-full font-semibold text-[13px]">Assigned Product <strong className='text-red-500 text-[12px]'>*</strong></label>
                 <input
                   id="asignProduct"
                   name="asignProduct"
@@ -489,7 +530,7 @@ const columns: GridColDef[] = [
               </div>
               {/* Location */}
               <div>
-                <label htmlFor="location" className="w-full font-semibold text-[13px]">Location</label>
+                <label htmlFor="location" className="w-full font-semibold text-[13px]">Location <strong className='text-red-500 text-[12px]'>*</strong></label>
                 <select
                   name="location"
                   onChange={(e) => setFormData({...formData , location:e.target.value})}
@@ -503,18 +544,18 @@ const columns: GridColDef[] = [
               </div>
               {/* Minimum count */}
               <div>
-                <label htmlFor="unitWeight" className="w-full font-semibold text-[13px]">Unit Weight</label>
+                <label htmlFor="unitWeight" className="w-full font-semibold text-[13px]">Unit Weight &#40;g&#41; <strong className='text-red-500 text-[12px]'>*</strong></label>
                 <input
                   id="unitweight"
                   name="unitWeight"
-                  placeholder='Unit Weight'
+                  placeholder='Unit Weight (g)'
                   onChange={(e) => setFormData({...formData , unitWeight:e.target.value})}
                   className="w-full p-2 mt-2 text-[12px] border rounded-md"
                 />
               </div>
               {/* Minimum count */}
               <div>
-                <label htmlFor="minItems" className="w-full font-semibold text-[13px]">Minimum Items Count</label>
+                <label htmlFor="minItems" className="w-full font-semibold text-[13px]">Minimum Items Count <strong className='text-red-500 text-[12px]'>*</strong></label>
                 <input
                   id="minItems"
                   name="minItems"
@@ -525,28 +566,28 @@ const columns: GridColDef[] = [
               </div>
               {/* Maximum Battery Percentage */}
               <div>
-                <label htmlFor="minBattery" className="w-full font-semibold text-[13px]">Minimum Battery Percentage</label>
+                <label htmlFor="minBattery" className="w-full font-semibold text-[13px]">Minimum Battery Percentage &#40;%&#41; </label>
                 <input
                   id="minBattery"
                   name="minBattery"
-                  placeholder='Minimum Battery Percentage'
+                  placeholder='Minimum Battery Percentage (%)'
                   onChange={(e) => setFormData({...formData , minBatteryPercentage:e.target.value})}
                   className="w-full p-2 mt-2 text-[12px] border rounded-md"
                 />
               </div>
               {/* Maximum Battery Volatage */}
               <div>
-                <label htmlFor="minVoltage" className="w-full font-semibold text-[13px]">Minimum Battery Voltage</label>
+                <label htmlFor="minVoltage" className="w-full font-semibold text-[13px]">Minimum Battery Voltage &#40;V&#41;</label>
                 <input
                   id="minVoltage"
                   name="minVoltage"
-                  placeholder='Minimum Battery Voltage'
+                  placeholder='Minimum Battery Voltage (V)'
                   onChange={(e) => setFormData({...formData , minBatteryVoltage:e.target.value})}
                   className="w-full p-2 mt-2 text-[12px] border rounded-md"
                 />
               </div>
               <div className="">
-                <label htmlFor="image" className="w-full font-semibold text-[13px]">Select Device Status</label>
+                <label htmlFor="image" className="w-full font-semibold text-[13px]">Select Device Status <strong className='text-red-500 text-[12px]'>*</strong></label>
                 <select
                   name="status"
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
@@ -557,7 +598,7 @@ const columns: GridColDef[] = [
                 </select>
               </div>
                 <div className="">
-                <label htmlFor="image" className="w-full font-semibold text-[13px]">Category</label>
+                <label htmlFor="image" className="w-full font-semibold text-[13px]">Category <strong className='text-red-500 text-[12px]'>*</strong></label>
                 <select
                   name="category"
                   onChange={(e) => setFormData({...formData , category:e.target.value})}

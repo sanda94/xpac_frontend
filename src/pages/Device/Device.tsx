@@ -383,8 +383,34 @@ const Device: React.FC = () => {
     }
   };
 
+  const isNumberValid = (number: string) => {
+    const numberRegex = /^\d+$/;
+    return numberRegex.test(number);
+  };
+
+  const isFloatNumberValid = (number: string) => {
+    const floatRegex = /^\d+(\.\d+)?$/; // Matches integers and floats
+    return floatRegex.test(number);
+  };
+
   // Handle form submission
   const handleSubmit = () => {
+    if(newDevice.unitWeight && !isFloatNumberValid(newDevice.unitWeight)){
+      notify('Please enter valid unit weight!' , 'error');
+      return;
+    }
+    if(newDevice.minItems && !isNumberValid(newDevice.minItems)){
+      notify('Please enter valid minimum items count!' , 'error');
+      return;
+    }
+    if(newDevice.minBatteryPercentage && !isNumberValid(newDevice.minBatteryPercentage)){
+      notify('Please enter valid minimum battery percentage!' , 'error');
+      return;
+    }
+    if(newDevice.minBatteryVoltage && !isFloatNumberValid(newDevice.minBatteryVoltage)){
+      notify('Please enter valid minimum battery voltage!' , 'error');
+      return;
+    }
     Swal.fire({
       title: "",
       text: "Are you sure to update device?",
@@ -862,11 +888,11 @@ const Device: React.FC = () => {
               </div>
               {/* Assigned Product */}
               <div>
-                <label htmlFor="unitWeight" className="w-full font-semibold text-[13px]">Unit Weight</label>
+                <label htmlFor="unitWeight" className="w-full font-semibold text-[13px]">Unit Weight &#40;g&#41;</label>
                 <input
                   id="unitweight"
                   name="unitWeight"
-                  placeholder='Unit Weight'
+                  placeholder='Unit Weight (g)'
                   value={newDevice.unitWeight}
                   onChange={(e) => setNewDevice({...newDevice , unitWeight:e.target.value})}
                   className="w-full p-2 mt-2 text-[12px] border rounded-md"
@@ -885,22 +911,22 @@ const Device: React.FC = () => {
                 />
               </div>
               <div>
-                <label htmlFor="minBatteryPercentage" className="w-full font-semibold text-[13px]">Minimum Battery Percentage</label>
+                <label htmlFor="minBatteryPercentage" className="w-full font-semibold text-[13px]">Minimum Battery Percentage &#40;%&#41;</label>
                 <input
                   id="minBatteryPercentage"
                   name="minBatteryPercentage"
-                  placeholder='Minimum Battrey Percentage'
+                  placeholder='Minimum Battrey Percentage (%)'
                   value={newDevice.minBatteryPercentage}
                   onChange={(e) => setNewDevice({...newDevice , minBatteryPercentage:e.target.value})}
                   className="w-full p-2 mt-2 text-[12px] border rounded-md"
                 />
               </div>
               <div>
-                <label htmlFor="minBatteryVoltage" className="w-full font-semibold text-[13px]">Minimum Battery Voltage</label>
+                <label htmlFor="minBatteryVoltage" className="w-full font-semibold text-[13px]">Minimum Battery Voltage &#40;V&#41;</label>
                 <input
                   id="minBatteryVoltage"
                   name="minBatteryVoltage"
-                  placeholder='Minimum Battery Voltage'
+                  placeholder='Minimum Battery Voltage (V)'
                   value={newDevice.minBatteryVoltage}
                   onChange={(e) => setNewDevice({...newDevice , minBatteryVoltage:e.target.value})}
                   className="w-full p-2 mt-2 text-[12px] border rounded-md"

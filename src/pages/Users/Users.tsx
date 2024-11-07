@@ -242,7 +242,7 @@ const Users: React.FC = () => {
 
   const handleSubmit = () => {
     if(!newUser.fullName || !newUser.emailAddress || !newUser.address || !newUser.phoneNumber){
-      notify('Fill all required field before click Add User button' , 'error');
+      notify('Fill all required field before click Save button' , 'error');
       return;
     }else if (!isValidEmail(newUser.emailAddress)) {
       notify('Please enter a valid Email Address.', 'warning');
