@@ -21,6 +21,8 @@ type Device = {
   minBatteryPercentage: string;
   minBatteryVoltage: string;
   status: string;
+  offSet: string;
+  calibrationValue: string;
   refilingStatus:string;
   description: string;
   message: string;
@@ -36,6 +38,9 @@ interface FormData {
   minItemsCount: string;
   minBatteryPercentage: string;
   minBatteryVoltage: string;
+  offSet: string;
+  calibrationValue: string;
+  refilingStatus:string;
   status: string;
   description: string;
   message: string;
@@ -70,6 +75,9 @@ const Devices: React.FC = () => {
     minItemsCount: '',
     minBatteryPercentage:'',
     minBatteryVoltage:'',
+    offSet:'',
+    calibrationValue: '',
+    refilingStatus:'',
     status:'Active',
     description: '',
     message:'',
@@ -219,7 +227,11 @@ const Devices: React.FC = () => {
     const floatRegex = /^\d+(\.\d+)?$/; // Matches integers and floats
     return floatRegex.test(number);
   };
-  
+
+  const isOffsetValid = (offset: string) => {
+    const offsetRegex = /^[+-]?\d+$/;
+    return offsetRegex.test(offset);
+  };
 
   const handleFormSubmit = () => {
 
@@ -236,23 +248,31 @@ const Devices: React.FC = () => {
         return;
       }
 
-    if(formData.unitWeight && !isFloatNumberValid(formData.unitWeight)){
+    if(!isFloatNumberValid(formData.unitWeight)){
       notify('Please enter valid unit weight!' , 'error');
       return;
     }
 
    if (!isNumberValid(formData.minItemsCount)) {
-        notify('Please enter a valid Minimum Items Count.', 'error');
+        notify('Please enter a valid Minimum Items Count!', 'error');
         return;
     }
-    if (!isNumberValid(formData.minBatteryPercentage)) {
-      notify('Please enter a valid Minimum Battery Percentage.', 'error');
+    if (formData.minBatteryPercentage && !isNumberValid(formData.minBatteryPercentage)) {
+      notify('Please enter a valid Minimum Battery Percentage!', 'error');
       return;
   }
-  if (!isFloatNumberValid(formData.minBatteryVoltage)) {
-    notify('Please enter a valid Minimum Battery Voltage.', 'error');
+  if (formData.minBatteryPercentage && !isFloatNumberValid(formData.minBatteryVoltage)) {
+    notify('Please enter a valid Minimum Battery Voltage!', 'error');
     return;
-}
+  }
+  if (formData.offSet && !isOffsetValid(formData.offSet)) {
+    notify('Please enter a valid Off Set!', 'error');
+    return;
+  }
+  if (formData.calibrationValue && !isFloatNumberValid(formData.calibrationValue)) {
+    notify('Please enter a valid Calibration Value!', 'error');
+    return;
+  }
     Swal.fire({
         title: "",
         text: "Are you sure you want to Create New Device?",
@@ -308,6 +328,8 @@ const CreateDevice = async() => {
     minItems:formData.minItemsCount,
     minBatteryPercentage:formData.minBatteryPercentage,
     minBatteryVoltage:formData.minBatteryVoltage,
+    offSet:formData.offSet,
+    calibrationValue:formData.calibrationValue,
     status:formData.status,
     imageUrl:ImageUrl !== null ? `http://localhost:3300/uploads/${ImageUrl}` : null,
     refilingStatus:"None",
@@ -358,6 +380,9 @@ const ClearData = () => {
     minItemsCount: '',
     minBatteryPercentage:'',
     minBatteryVoltage:'',
+    offSet:'',
+    calibrationValue: '',
+    refilingStatus:'',
     status:'Active',
     description: '',
     message:'',
@@ -425,6 +450,18 @@ const columns: GridColDef[] = [
   {
     field: 'minBatteryVoltage',
     headerName: 'Min Battery Voltage (V)',
+    minWidth:165,
+    align:"center"
+  },
+  {
+    field: 'offSet',
+    headerName: 'Offset',
+    minWidth:165,
+    align:"center"
+  },
+  {
+    field: 'calibrationValue',
+    headerName: 'Calibration Value',
     minWidth:165,
     align:"center"
   },
@@ -619,6 +656,28 @@ const columns: GridColDef[] = [
                   accept="image/*"
                   className="w-full p-2 mt-2 text-[12px] border rounded-md"
                   onChange={HandleFileChange}
+                />
+              </div>
+              { /* Off Set */}
+              <div>
+                <label htmlFor="offSet" className="w-full font-semibold text-[13px]">Off Set</label>
+                <input
+                  id="offSet"
+                  name="OffSet"
+                  placeholder='Off Set'
+                  onChange={(e) => setFormData({...formData , offSet:e.target.value})}
+                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
+                />
+              </div>
+              { /* Calibration Value */}
+              <div>
+                <label htmlFor="calibrationValue" className="w-full font-semibold text-[13px]">Calibration Value</label>
+                <input
+                  id="calibrationValue"
+                  name="calibrationValue"
+                  placeholder='Calibration Value'
+                  onChange={(e) => setFormData({...formData , calibrationValue:e.target.value})}
+                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
                 />
               </div>
                 {/* Description */}

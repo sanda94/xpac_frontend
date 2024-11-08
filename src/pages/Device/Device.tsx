@@ -21,6 +21,8 @@ type Device = {
   unitWeight:string,
   minItems:string,
   minBatteryPercentage:string,
+  offSet: string;
+  calibrationValue: string;
   status:string,
   minBatteryVoltage:string,
   imageUrl:string,
@@ -125,6 +127,8 @@ const Device: React.FC = () => {
     unitWeight:"",
     minItems:"",
     minBatteryPercentage:"",
+    offSet: "",
+    calibrationValue: "",
     status:"",
     minBatteryVoltage:"",
     imageUrl:"",
@@ -154,6 +158,8 @@ const Device: React.FC = () => {
     unitWeight:string,
     minItems:string,
     minBatteryPercentage:string,
+    offSet: string;
+    calibrationValue: string;
     status:string,
     minBatteryVoltage:string,
     imageUrl:string,
@@ -169,6 +175,8 @@ const Device: React.FC = () => {
     location:"",
     minItems:"",
     minBatteryPercentage:"",
+    offSet: "",
+    calibrationValue: "",
     status:"",
     minBatteryVoltage:"",
     imageUrl:"",
@@ -276,6 +284,8 @@ const Device: React.FC = () => {
             location:deviceResponse.data.device.location,
             minItems:deviceResponse.data.device.minItems,
             minBatteryPercentage:deviceResponse.data.device.minBatteryPercentage,
+            offSet:deviceResponse.data.device.offSet,
+            calibrationValue:deviceResponse.data.device.calibrationValue,
             status:deviceResponse.data.device.status,
             minBatteryVoltage:deviceResponse.data.device.minBatteryVoltage,
             imageUrl:deviceResponse.data.device.imageUrl,
@@ -520,6 +530,8 @@ const Device: React.FC = () => {
       unitWeight:newDevice.unitWeight,
       minItems:newDevice.minItems,
       minBatteryPercentage:newDevice.minBatteryPercentage,
+      offSet:newDevice.offSet,
+      calibrationValue:newDevice.calibrationValue,
       status:newDevice.status,
       minBatteryVoltage:newDevice.minBatteryVoltage,
       imageUrl:ImageUrl !== null ? `http://localhost:3300/uploads/${ImageUrl}`: newDevice.imageUrl,
@@ -625,6 +637,8 @@ const Device: React.FC = () => {
       itemCount:deviceDetails.itemCount,
       itemCountIncreaseBy:deviceDetails.itemCountIncreaseBy,
       itemCountDecreaseBy: deviceDetails.itemCountDecreaseBy,
+      offSet:deviceData.offSet,
+      calibrationValue: deviceData.calibrationValue,
       status:deviceData.status,
       minBatteryVoltage:deviceData.minBatteryVoltage,
       refilingStatus:deviceData.refilingStatus,
@@ -658,6 +672,8 @@ const Device: React.FC = () => {
     unitWeight:deviceData.unitWeight,
     minItems:deviceData.minItems,
     minBatteryPercentage:deviceData.minBatteryPercentage,
+    offSet:deviceData.offSet,
+    calibrationValue:deviceData.calibrationValue,
     status:deviceData.status,
     minBatteryVoltage:deviceData.minBatteryVoltage,
     refilingStatus:deviceData.refilingStatus,
@@ -705,6 +721,8 @@ const Device: React.FC = () => {
                 <p className="text-gray-600"><strong>Minimum Battery Percentage:</strong> {deviceData.minBatteryPercentage ? deviceData.minBatteryPercentage : "0"}%</p>
                 <p className="text-gray-600"><strong>Minimum Battery Voltage:</strong> {deviceData.minBatteryVoltage ? deviceData.minBatteryVoltage : "0"}V</p>
                 <p className="text-gray-600"><strong>Category:</strong> {deviceData.category ? deviceData.category : "None"}</p>
+                <p className="text-gray-600"><strong>Offset:</strong> {deviceData.offSet ? deviceData.offSet : "None"}</p>
+                <p className="text-gray-600"><strong>Calibration Value:</strong> {deviceData.calibrationValue ? deviceData.calibrationValue : "None"}</p>
                 <p className="text-gray-600"><strong>Active Status:</strong> {deviceData.status ? deviceData.status : "None"}</p>
                 <p className="text-gray-600"><strong>Refiling Status:</strong> {deviceData.refilingStatus ? deviceData.refilingStatus :"None"}</p>
                 <p className="text-gray-600"><strong>Message:</strong> {deviceData.message ? deviceData.message : "None"}</p>
@@ -972,6 +990,28 @@ const Device: React.FC = () => {
                     <option key={index} value={c.category}>{c.category}</option>
                   ))}
                 </select>
+              </div>
+              <div>
+                <label htmlFor="minItems" className="w-full font-semibold text-[13px]">Offset</label>
+                <input
+                  id="minItems"
+                  name="minItems"
+                  placeholder='Minimum Count'
+                  value={newDevice.offSet}
+                  onChange={(e) => setNewDevice({...newDevice , offSet:e.target.value})}
+                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
+                />
+              </div>
+              <div>
+                <label htmlFor="minItems" className="w-full font-semibold text-[13px]">Calibration Value</label>
+                <input
+                  id="minItems"
+                  name="minItems"
+                  placeholder='Minimum Count'
+                  value={newDevice.calibrationValue}
+                  onChange={(e) => setNewDevice({...newDevice , calibrationValue:e.target.value})}
+                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
+                />
               </div>
                 {/* Image Upload */}
               <div className='md:col-span-2'>

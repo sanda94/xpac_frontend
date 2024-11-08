@@ -23,6 +23,8 @@ type DeviceData = {
   minBatteryVoltage:string;
   unitWeight: number;
   location: string;
+  offSet: string;
+  calibrationValue: string;
   status: string;
   batteryPercentage: number;
   batteryVoltage:number;
@@ -110,6 +112,8 @@ const Summary: React.FC = () => {
           itemCountIncreaseBy: Number(device?.deviceData?.itemCountIncreaseBy),
           totalWeight: Number(device?.deviceData?.totalWeight),
           location: device.location,
+          offSet: device.offSet,
+          calibrationValue: device.calibrationValue,
           status: device.status,
           refilingStatus: device.refilingStatus,
           description: device.description,
@@ -233,12 +237,16 @@ const saveOrderToLocalStorage = async(data: DeviceData[]) => {
       itemCount: device.itemCount,
       itemCountIncreaseBy: device.itemCountIncreaseBy,
       itemCountDecreaseBy: device.itemCountDecreaseBy,
+      offSet: device.offSet,
+      calibrationValue: device.calibrationValue,      
       status: device.status,
       minBatteryVoltage: device.minBatteryVoltage,
       refilingStatus: device.refilingStatus,
       description: device.description,
       message: device.message,
     }));
+
+    console.log("Excel Data" , data);
 
     const type = "all_devices_data";
     const baseUrl = "http://localhost:3300/api";
