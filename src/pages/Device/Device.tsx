@@ -620,6 +620,59 @@ const Device: React.FC = () => {
     }
   }
 
+  // ---------- Function to handel delete all button ----------
+  const handelDeleteAllButton = () => {
+    Swal.fire({
+      title: "",
+      text: "Are you sure to delete all device data?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor:theme === 'dark' ? "#86D293" : '#73EC8B',
+      cancelButtonColor: theme === 'dark' ? "#B8001F" : "#C7253E" ,
+      background:colors.primary[400],
+      iconColor:colors.blueAccent[400],
+      confirmButtonText: "Ok",
+      color:colors.grey[100],
+      allowOutsideClick: false
+    }).then((result) => {
+        if(result.isConfirmed){
+          deleteDeviceData();
+        }
+    })
+  }
+
+  // ---------- Function to delete all device data ----------
+  const deleteDeviceData = async() => {
+    try {
+      const response = await axios.delete(`${baseUrl}/weighingdata/delete-device/${deviceData._id}`,
+        {
+          headers:{
+            token: `Bearer ${Token}`,
+          }
+        }
+      );
+
+      if(response.data.status){
+        Swal.fire({
+          title: "",
+          text: "Data delete successfully!",
+          icon: "success",
+          showCancelButton: false,
+          confirmButtonColor: theme === 'dark' ? "#86D293" : '#73EC8B',
+          background: colors.primary[400],
+          iconColor: "#06D001",
+          confirmButtonText: "Ok",
+          color: colors.grey[100],
+          allowOutsideClick: false
+        });
+       FetchData();
+      }
+    } catch (error:any) {
+      console.log(error.response.data.error.message);
+      notify(error.response.data.error.message , "warning"); 
+    }
+  }
+
   // ---------- Function to current details ----------
   const downloadCurrentDetails = async() => {
     const data = {
@@ -741,6 +794,14 @@ const Device: React.FC = () => {
                 >
                   Download Current
                 </button>
+                {UserType === "Admin" && (
+                   <button
+                   onClick={handelDeleteAllButton}
+                   className="w-full px-4 py-3 mt-5 transition-colors text-[12px] duration-300 bg-red-300 rounded-md lg:w-auto hover:bg-red-200"
+                 >
+                   Delete All
+                 </button>
+                )}
                 </div>
              </div>
             </div>

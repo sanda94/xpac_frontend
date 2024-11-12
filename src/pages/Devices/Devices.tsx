@@ -261,7 +261,7 @@ const Devices: React.FC = () => {
       notify('Please enter a valid Minimum Battery Percentage!', 'error');
       return;
   }
-  if (formData.minBatteryPercentage && !isFloatNumberValid(formData.minBatteryVoltage)) {
+  if (formData.minBatteryVoltage && !isFloatNumberValid(formData.minBatteryVoltage)) {
     notify('Please enter a valid Minimum Battery Voltage!', 'error');
     return;
   }
