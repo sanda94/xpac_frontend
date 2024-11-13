@@ -808,62 +808,70 @@ const Device: React.FC = () => {
           </div>
 
           {/* Circular Progress Bars */}
-        { deviceDetails && deviceDetails.batteryPercentage !== 0 && deviceDetails.batteryVoltage !== 0 && deviceDetails.itemCount !== 0 && deviceDetails.totalWeight !== 0 && (<div className="flex flex-col items-center justify-center w-full gap-5 mt-6 mb-6 md:grid md:grid-cols-2 xl:grid-cols-4">
+        { deviceDetails && (<div className="flex flex-col items-center justify-center w-full gap-5 mt-6 mb-6 md:grid md:grid-cols-2 xl:grid-cols-4">
           {/* Battery Percentage */}
-         <div className='flex items-center justify-center w-full h-full'>
-         <CircularProgressBar
-            CurrentValue={deviceDetails.batteryPercentage}
-            StartValue={0}
-            EndValue={100}
-            LowValue={20}
-            HighValue={75}
-            Units="%"
-            InnerColor="#F78F5E"
-            TextColor="#000000"
-            Icon={Icons.battery}
-            Title="Battery Percentage"
-          />
-         </div>
-         <div className='flex items-center justify-center w-full h-full'>
-            {/* Battery Voltage */}
+          {deviceDetails && deviceDetails.batteryPercentage !== 0 && 
+            <div className='flex items-center justify-center w-full h-full'>
             <CircularProgressBar
-              CurrentValue={deviceDetails.batteryVoltage}
-              StartValue={0}
-              EndValue={100}
-              LowValue={10}
-              HighValue={25}
-              Units="V"
-              InnerColor="#F78F5E"
-              TextColor="#000000"
-              Icon={Icons.voltageMeter}
-              Title="Battery Voltage"
-            />
-         </div>
-         <div className='flex items-center justify-center w-full h-full'>
-          {/* Item Count */}
-          <CircularProgressBar
-            CurrentValue={deviceDetails.itemCount}
-            StartValue={0}
-            EndValue={100}
-            LowValue={10}
-            HighValue={80}
-            Units=""
-            InnerColor="#F78F5E"
-            TextColor="#000000"
-            Icon={Icons.itemCount}
-            Title="Item Count"
-          />
-         </div>
-         <div className='flex items-center justify-center w-full h-full'>
-            {/* Total Weight */}
-            <Circle
-              title="Total Weight"
-              value={`${deviceDetails.totalWeight} g`}
-              unVal={String(deviceDetails.totalWeight)}
-              bgColor="#F78F5E"
-              icon={Icons.totalWeight}
-            />
-         </div>
+                CurrentValue={deviceDetails.batteryPercentage}
+                StartValue={0}
+                EndValue={100}
+                LowValue={20}
+                HighValue={75}
+                Units="%"
+                InnerColor="#F78F5E"
+                TextColor="#000000"
+                Icon={Icons.battery}
+                Title="Battery Percentage"
+              />
+            </div>
+          }
+         {deviceDetails && deviceDetails.batteryVoltage !== 0 && 
+            <div className='flex items-center justify-center w-full h-full'>
+                {/* Battery Voltage */}
+                <CircularProgressBar
+                  CurrentValue={deviceDetails.batteryVoltage}
+                  StartValue={0}
+                  EndValue={100}
+                  LowValue={10}
+                  HighValue={25}
+                  Units="V"
+                  InnerColor="#F78F5E"
+                  TextColor="#000000"
+                  Icon={Icons.voltageMeter}
+                  Title="Battery Voltage"
+                />
+            </div>
+          }
+         {deviceDetails && deviceDetails.itemCount !== 0 && 
+            <div className='flex items-center justify-center w-full h-full'>
+              {/* Item Count */}
+              <CircularProgressBar
+                CurrentValue={deviceDetails.itemCount}
+                StartValue={0}
+                EndValue={100}
+                LowValue={10}
+                HighValue={80}
+                Units=""
+                InnerColor="#F78F5E"
+                TextColor="#000000"
+                Icon={Icons.itemCount}
+                Title="Item Count"
+              />
+            </div>
+          }
+         {deviceDetails && deviceDetails.totalWeight !== 0 && 
+            <div className='flex items-center justify-center w-full h-full'>
+                {/* Total Weight */}
+                <Circle
+                  title="Total Weight"
+                  value={`${deviceDetails.totalWeight} g`}
+                  unVal={String(deviceDetails.totalWeight)}
+                  bgColor="#F78F5E"
+                  icon={Icons.totalWeight}
+                />
+            </div>
+          }
         </div>)}
           {/* Line Chart */}
           <div className="mt-6">
