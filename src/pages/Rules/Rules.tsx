@@ -111,8 +111,8 @@ const Devices: React.FC = () => {
     ruleType: '',
   });
   const { notify } = useToast();
-const [users , setUsers] = useState<User[]>([]);
-const [devices , setDevices] = useState<Device[]>([]);
+  const [users , setUsers] = useState<User[]>([]);
+  const [devices , setDevices] = useState<Device[]>([]);
 
   useEffect(() => {
     if(!Token){
@@ -248,20 +248,20 @@ const [devices , setDevices] = useState<Device[]>([]);
 
   const handleSubmit = () => {
     if(!newRule.userName){
-      notify('Select User Name before click save button' , 'info');
+      notify('Select User Name before click save button.' , 'info');
       return;
     }
     if(!newRule.deviceName){
-      notify('Select Device before click save button' , 'info');
+      notify('Select Device before click save button.' , 'info');
       return
     }
     if(!newRule.status){
-      notify('Select EmailStatus before click save button' , 'info');
+      notify('Select EmailStatus before click save button.' , 'info');
       return
     }
     Swal.fire({
       title: "",
-      text: "Are you sure you want to Create New Rule?",
+      text: "Are you sure, you want to Create New Rule?",
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: theme === 'dark' ? "#86D293" : '#73EC8B',
@@ -277,6 +277,92 @@ const [devices , setDevices] = useState<Device[]>([]);
       }
   });
   };
+
+  const handelAddAllDevicesButton = () => {
+    if(!devices){
+      notify('Create New Device Before Create New Rule!' , 'info');
+      return;
+    }
+    if(!newRule.userName){
+      notify('Select User Name before click Add All Devices button.' , 'info');
+      return;
+    }
+    if(!newRule.status){
+      notify('Select EmailStatus before click Add All Devices button.' , 'info');
+      return
+    }
+    Swal.fire({
+      title: "",
+      text: "Are you sure, you want to Create New Rules for All Devices?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: theme === 'dark' ? "#86D293" : '#73EC8B',
+      cancelButtonColor: theme === 'dark' ? "#B8001F" : "#C7253E",
+      background: colors.primary[400],
+      iconColor: colors.blueAccent[400],
+      confirmButtonText: "Ok",
+      color: colors.grey[100],
+      allowOutsideClick: false
+  }).then((result) => {
+      if (result.isConfirmed) {
+        CreateRulesForAllDevices();
+      }
+  });
+  }
+
+  const CreateRulesForAllDevices = async() => {
+    try {
+      const ImageUrl = await ImageUpload();
+      const now = new Date();
+      const date = now.toISOString().split('T')[0];
+      const time = now.toTimeString().split(' ')[0];
+
+      const rulesData = devices.map((device) => ({
+        deviceId: device._id,
+        deviceName: device.title,
+        imageUrl: ImageUrl ? `http://localhost:3300/uploads/${ImageUrl}` : null,
+        userId: newRule.userId,
+        userName: newRule.userName,
+        emailStatus: newRule.status,
+        dateCreated: date,
+        timeCreated: time,
+        dateUpdated: date,
+        timeUpdated: time,
+      }));
+
+      console.log(rulesData);
+
+      const createRulePromises = rulesData.map((ruleData) =>
+        axios.post(`${baseUrl}/rules/create`, ruleData, {
+          headers: {
+            token: `Bearer ${Token}`,
+          },
+        })
+      );
+
+      const results = await Promise.all(createRulePromises);
+
+      if (results.every((response) => response.data.status)) {
+        Swal.fire({
+          title: "",
+          text: "Rules created successfully for all devices!",
+          icon: "success",
+          showCancelButton: false,
+          confirmButtonColor: theme === "dark" ? "#86D293" : "#73EC8B",
+          background: colors.primary[400],
+          iconColor: "#06D001",
+          confirmButtonText: "Ok",
+          color: colors.grey[100],
+          allowOutsideClick: false,
+        });
+      } 
+      FetchData();
+    }  catch (error:any) {
+      FetchData();
+      console.log(error);
+      notify(error.response.data.error.message, "error"); 
+    }
+  }
 
   const statusChange = () => {
 
@@ -363,7 +449,18 @@ const [devices , setDevices] = useState<Device[]>([]);
               </select>
               </div>
             </div>
-
+            {UserType === "Admin" && (
+              <div
+                className="flex justify-start mt-6 space-x-4"
+              >
+                <button
+                onClick={handelAddAllDevicesButton}
+                  className="px-4 py-3 text-[12px] w-full lg:w-1/2 bg-orange-400 rounded-lg hover:bg-orange-300 transition-colors duration-300"
+                >
+                  Create for All Devices
+                </button>
+            </div>
+            )}
             <div className="flex justify-end mt-6 space-x-4">
               <button
                 className="px-4 py-3 text-[12px] w-full bg-gray-400 rounded-lg hover:bg-gray-300 transition-colors duration-300"
