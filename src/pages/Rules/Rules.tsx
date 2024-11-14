@@ -125,7 +125,7 @@ const [devices , setDevices] = useState<Device[]>([]);
   const FetchData = async () => {
     try {
       const [usersResponse, devicesResponse, rulesResponse] = await Promise.all([
-        axios.get(`${baseUrl}/users/all`, {
+        axios.get(`${baseUrl}/users/all/nonadmin`, {
           headers: {
             token: `Bearer ${Token}`,
           },
@@ -151,15 +151,15 @@ const [devices , setDevices] = useState<Device[]>([]);
   
       // Check if all requests were successful
       if (usersResponse.data.status && devicesResponse.data.status && rulesResponse.data.status) {
-        setUsers(usersResponse.data.users);
+        setUsers(usersResponse.data.nonAdminUsers);
         setDevices(devicesResponse.data.devices);
         setRules(rulesResponse.data.rules);
       } else {
         notify("Failed to fetch data. Please try again later.", "error");
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error(error);
-      notify("An unexpected error occurred. Please try again later.", "error");
+      notify(error.response.data.error.message , "error"); 
     }
   };
   
@@ -190,8 +190,9 @@ const [devices , setDevices] = useState<Device[]>([]);
         },
       });
       return response.data.fileName;
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
+      //notify(error.response.data.error.message, "error"); 
     }
   }
 

@@ -29,6 +29,7 @@ const Users: React.FC = () => {
   const {baseUrl} = useBaseUrl();
   const UserType = savedUserData.userType;
   const Token = savedUserData.accessToken;
+  const UserId = savedUserData.userId;
   const [isOpenForm, setIsFormOpen] = useState<boolean>(false);
   const [userData, setUserData] = useState<User[]>([]);
   const [newUser, setNewUser] = useState<{
@@ -62,9 +63,12 @@ const Users: React.FC = () => {
   },[Token]);
 
   const FetchData = async() => {
+    const data = {
+      userId: UserId
+    }
     try {
-      const response = await axios.get(
-        `${baseUrl}/users/all`,{
+      const response = await axios.post(
+        `${baseUrl}/users/all/except`, data , {
           headers: {
             token: `Bearer ${Token}`,
           },
@@ -74,9 +78,9 @@ const Users: React.FC = () => {
       }else{
         notify(response.data.error.message , 'error');
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
-      notify("An unexpected error occurred. Please try again later.", "error");
+      notify(error.response.data.error.message, "error"); 
     }
   }
 
@@ -130,8 +134,9 @@ const Users: React.FC = () => {
         },
       });
       return response.data.fileName;
-    } catch (error) {
+    }catch (error:any) {
       console.log(error);
+      notify(error.response.data.error.message, "error"); 
     }
   }
 

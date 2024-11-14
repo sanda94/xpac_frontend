@@ -102,8 +102,9 @@ const DataTable: React.FC<Props> = (props: Props) => {
           token: `Bearer ${Token}`,
         },
       })
-    } catch (error) {
-      
+    } catch (error:any) {
+      console.log(error);
+      notify(error.response.data.error.message, "error"); 
     }
   }
 
@@ -145,9 +146,9 @@ const DataTable: React.FC<Props> = (props: Props) => {
           allowOutsideClick: false
         });
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
-      notify("An unexpected error occurred. Please try again later.", "error");
+      notify(error.response.data.error.message, "error"); 
     }
   }
 

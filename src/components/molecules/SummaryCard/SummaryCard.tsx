@@ -42,7 +42,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
     <div
       style={{ zIndex: 999, pointerEvents: isDrag ? 'none' : 'auto', opacity: isDrag ? 0.6 : 1 }}
       className={`p-6 rounded-lg z-30 md:max-w-[480px] lg:max-w-[480px] sm:max-w-[95%] md:h-[450px] relative md:min-h-[450px] w-full overflow-hidden 
-        ${ minCount > itemCount ? "bg-red-100" : minCount*3 > itemCount && minCount < itemCount ? "bg-yellow-100" : minCount*3 < itemCount ? "bg-green-100" : "bg-white"}`}
+        ${ minCount > itemCount ? "bg-red-100" : minCount*3 > itemCount && minCount < itemCount ? "bg-yellow-100" : minCount*3 < itemCount ? "bg-green-100" : "bg-slate-100"}`}
     >
       
       <h2 

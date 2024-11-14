@@ -123,9 +123,9 @@ const Summary: React.FC = () => {
       }else{
         notify(response.data.error.message , 'error');
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
-      notify("An unexpected error occurred. Please try again later.", "error");
+      notify(error.response.data.error.message, "error"); 
     }
   };
 
@@ -145,8 +145,9 @@ const Summary: React.FC = () => {
       if(response.data.status){
         console.log(response.data.success.message);
       }
-    } catch (error) {
-      console.error("save order failed!");
+    } catch (error:any) {
+      console.log(error);
+      notify(error.response.data.error.message, "error"); 
     }
   }    
 

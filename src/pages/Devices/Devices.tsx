@@ -109,9 +109,9 @@ const Devices: React.FC = () => {
       }else{
         notify(response.data.error.message , 'error');
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
-      notify("An unexpected error occurred. Please try again later.", "error");
+      notify(error.response.data.error.message, "error"); 
     }
   }
 
@@ -128,9 +128,9 @@ const Devices: React.FC = () => {
       }else{
         notify(response.data.error.message , 'error');
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
-      notify("An unexpected error occurred. Please try again later.", "error");
+      //notify(error.response.data.error.message, "error"); 
     }
   };
 
@@ -147,9 +147,9 @@ const Devices: React.FC = () => {
       }else{
         notify(response.data.error.message , 'error');
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
-      notify("An unexpected error occurred. Please try again later.", "error");
+      //notify(error.response.data.error.message, "error"); 
     }
   }
 
@@ -199,9 +199,9 @@ const Devices: React.FC = () => {
             });
             FetchData()
           }
-        } catch (error) {
+        } catch (error:any) {
           console.log(error);
-          notify("An unexpected error occurred. Please try again later.", "error"); 
+          notify(error.response.data.error.message, "error"); 
         }
       }
   });
@@ -307,8 +307,9 @@ const ImageUpload = async() => {
       },
     });
     return response.data.fileName;
-  } catch (error) {
+  } catch (error:any) {
     console.log(error);
+    //notify(error.response.data.error.message, "error"); 
   }
 }
 

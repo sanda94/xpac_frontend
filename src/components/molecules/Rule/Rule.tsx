@@ -71,7 +71,7 @@ const RulePopup: React.FC<RuleProps> = ({ onClose, ruleData , fetchData }) => {
       const FetchData = async () => {
         try {
           const [usersResponse, devicesResponse] = await Promise.all([
-            axios.get(`${baseUrl}/users/all`, {
+            axios.get(`${baseUrl}/users/all/nonadmin`, {
               headers: {
                 token: `Bearer ${Token}`,
               },
@@ -84,14 +84,14 @@ const RulePopup: React.FC<RuleProps> = ({ onClose, ruleData , fetchData }) => {
           ]);
       
           if (usersResponse.data.status && devicesResponse.data.status) {
-            setUsers(usersResponse.data.users);
+            setUsers(usersResponse.data.nonAdminUsers);
             setDevices(devicesResponse.data.devices);
           } else {
             notify("Failed to fetch data. Please try again later.", "error");
           }
-        } catch (error) {
-          console.error(error);
-          notify("An unexpected error occurred. Please try again later1.", "error");
+        } catch (error:any) {
+          console.log(error);
+          notify(error.response.data.error.message, "error"); 
         }
       };
 
@@ -146,8 +146,9 @@ const RulePopup: React.FC<RuleProps> = ({ onClose, ruleData , fetchData }) => {
               token: `Bearer ${Token}`,
             },
           })
-        } catch (error) {
-          
+        } catch (error:any) {
+          console.log(error);
+          //notify(error.response.data.error.message, "error"); 
         }
       }
     
@@ -170,8 +171,9 @@ const RulePopup: React.FC<RuleProps> = ({ onClose, ruleData , fetchData }) => {
             },
           });
           return response.data.fileName;
-        } catch (error) {
+        } catch (error:any) {
           console.log(error);
+          //notify(error.response.data.error.message, "error"); 
         }
       }
 
@@ -214,9 +216,9 @@ const RulePopup: React.FC<RuleProps> = ({ onClose, ruleData , fetchData }) => {
                 fetchData();
                 onClose();
             }           
-        } catch (error) {
-            console.log(error);
-            notify("An unexpected error occurred. Please try again later.", "error"); 
+        } catch (error:any) {
+          console.log(error);
+          notify(error.response.data.error.message, "error"); 
         }
     }
 

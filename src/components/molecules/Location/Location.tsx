@@ -87,10 +87,10 @@ const LocationPopup: React.FC<LocationProps> = ({ onClose, locationData , fetchD
                 fetchData();
                 onClose();
             }           
-        } catch (error) {
+        } catch (error:any) {
             console.log(error);
-            notify("An unexpected error occurred. Please try again later.", "error"); 
-        }
+            notify(error.response.data.error.message, "error"); 
+          }
     }
 
     return (

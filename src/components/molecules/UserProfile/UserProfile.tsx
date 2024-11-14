@@ -193,9 +193,9 @@ const UserProfile:React.FC = () => {
       }else{
         notify(usersResponse.data.error.message , 'error');
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
-      notify("An unexpected error occurred. Please try again later.", "error");
+      notify(error.response.data.error.message, "error"); 
     }
   }
 
@@ -231,8 +231,9 @@ const UserProfile:React.FC = () => {
           token: `Bearer ${Token}`,
         },
       })
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
+      notify(error.response.data.error.message, "error"); 
     }
   }
 
@@ -255,8 +256,9 @@ const UserProfile:React.FC = () => {
         },
       });
       return response.data.fileName;
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
+      notify(error.response.data.error.message, "error"); 
     }
   }
 
@@ -356,9 +358,9 @@ const UserProfile:React.FC = () => {
         FetchData();
         setShowEditForm(false);  
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
-      notify("An unexpected error occurred. Please try again later.", "error");
+      notify(error.response.data.error.message, "error"); 
     }
   }
 
@@ -404,9 +406,9 @@ const UserProfile:React.FC = () => {
           }
         }) 
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
-      notify("An unexpected error occurred. Please try again later.", "error");
+      notify(error.response.data.error.message, "error"); 
     }
   }
 
@@ -454,9 +456,9 @@ const UserProfile:React.FC = () => {
         FetchData();
         setIsFormOpen(false);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
-      notify("An unexpected error occurred. Please try again later.", "error"); 
+      notify(error.response.data.error.message, "error"); 
     }
   }
 
@@ -509,14 +511,16 @@ const UserProfile:React.FC = () => {
         </div>
 
         {/* Edit Button - Only show if userId and storedUserId are different */}
-        <div className="flex items-end justify-end w-full h-full md:mb-8">
-          <button
-            className="px-4 py-3 w-full text-[12px] md:w-auto text-white bg-blue-400 hover:bg-blue-300 transition-colors duration-300 rounded-lg"
-            onClick={() => setShowEditForm(true)}
-          >
-            Edit Profile
-          </button>
-        </div>
+        {(UserType === "Admin" || (UserType === "Moderator" && UserUpdateData.userType !== "Admin") || (UserId === userId)) && (
+          <div className="flex items-end justify-end w-full h-full md:mb-8">
+            <button
+              className="px-4 py-3 w-full text-[12px] md:w-auto text-white bg-blue-400 hover:bg-blue-300 transition-colors duration-300 rounded-lg"
+              onClick={() => setShowEditForm(true)}
+            >
+              Edit Profile
+            </button>
+          </div>
+        )}
       </div>
       {showEditForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-5 mt-5 bg-black bg-opacity-50">
@@ -598,8 +602,8 @@ const UserProfile:React.FC = () => {
                     onChange={(e) => setUserUpdateData({...UserUpdateData , userType:e.target.value})}
                     className="w-full p-2 mt-2 text-[12px] border rounded-md"
                   >
-                    <option value="Moderator">Moderator</option>
                     <option value="Admin">Admin</option>
+                    <option value="Moderator">Moderator</option>
                     <option value="Customer">Customer</option>
                   </select>
                 </div>

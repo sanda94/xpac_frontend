@@ -237,7 +237,7 @@ const Device: React.FC = () => {
   const FetchData = async() => {
     try {
       const [usersResponse, rulesResponse , deviceResponse , deviceDetailsResponse , lineCharDataResponse] = await Promise.all([
-        axios.get(`${baseUrl}/users/all`, {
+        axios.get(`${baseUrl}/users/all/nonadmin`, {
           headers: {
             token: `Bearer ${Token}`,
           },
@@ -271,7 +271,7 @@ const Device: React.FC = () => {
         deviceDetailsResponse.data.status &&
         lineCharDataResponse.data.status
       ){
-        setUsers(usersResponse.data.users);
+        setUsers(usersResponse.data.nonAdminUsers);
         setRules(rulesResponse.data.rules);  
         setDeviceData(deviceResponse.data.device);
           setNewDevice({
@@ -302,9 +302,9 @@ const Device: React.FC = () => {
       }else{
         notify(deviceResponse.data.error.message , 'error');
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
-      notify("An unexpected error occurred. Please try again later.", "error");
+      notify(error.response.data.error.message, "error"); 
     }
   }
 
@@ -331,12 +331,12 @@ const Device: React.FC = () => {
         }else{
           notify(response.data.error.message , 'error');
         }
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
-      notify("An unexpected error occurred. Please try again later.", "error");
+      //notify(error.response.data.error.message, "error"); 
     }
   }
-  console.log("Device Details" , deviceDetails);
+
   const GetCategories = async() => {
     try {
       const response = await axios.get(
@@ -350,9 +350,9 @@ const Device: React.FC = () => {
       }else{
         notify(response.data.error.message , 'error');
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
-      notify("An unexpected error occurred. Please try again later.", "error");
+      //notify(error.response.data.error.message, "error"); 
     }
   };
 
@@ -369,13 +369,11 @@ const Device: React.FC = () => {
       }else{
         notify(response.data.error.message , 'error');
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
-      notify("An unexpected error occurred. Please try again later.", "error");
+      //notify(error.response.data.error.message, "error"); 
     }
   }
-
-  console.log(deviceDetails);
 
   const togglePopup = () => {
     setIsOpen(!isOpen);
@@ -488,8 +486,9 @@ const Device: React.FC = () => {
           token: `Bearer ${Token}`,
         },
       })
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
+      //notify(error.response.data.error.message, "error"); 
     }
   }
 
@@ -511,8 +510,9 @@ const Device: React.FC = () => {
         },
       });
       return response.data.fileName;
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
+      //notify(error.response.data.error.message, "error"); 
     }
   }
 
@@ -564,8 +564,9 @@ const Device: React.FC = () => {
         FetchData();
         setShowEditDetails(false);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
+      notify(error.response.data.error.message, "error"); 
     }
   }
 
@@ -614,9 +615,9 @@ const Device: React.FC = () => {
        FetchData();
         setIsOpenForm(false);
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
-      notify("An unexpected error occurred. Please try again later.", "error"); 
+      notify(error.response.data.error.message, "error"); 
     }
   }
 
@@ -668,8 +669,8 @@ const Device: React.FC = () => {
        FetchData();
       }
     } catch (error:any) {
-      console.log(error.response.data.error.message);
-      notify(error.response.data.error.message , "warning"); 
+      console.log(error);
+      notify(error.response.data.error.message, "error"); 
     }
   }
 
@@ -756,7 +757,7 @@ const Device: React.FC = () => {
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
             <div className="flex flex-col items-center justify-start w-full gap-5 lg:items-start lg:flex-row lg:col-span-3">
             <img
-                src={deviceData.imageUrl === null ? Images.unknownDevice : deviceData.imageUrl}
+                src={(deviceData.imageUrl === "" || deviceData.imageUrl === null) ? Images.unknownDevice : deviceData.imageUrl}
                 alt={deviceData.title}
                 onClick={togglePopup}
                 className="object-cover w-[25%] cursor-pointer h-auto p-8 mb-4 rounded-lg bg-slate-300"
@@ -912,10 +913,12 @@ const Device: React.FC = () => {
         {/* Table Data */}
         <div className='col-span-1 lg:col-span-3'>
               <div className='flex flex-col items-center justify-center gap-4 p-2 md:items-start lg:justify-start'>
-                <button 
-                  className='bg-orange-400 px-4 py-3 w-full md:w-auto rounded-lg text-[12px] hover:bg-orange-300 duration-300 transition-colors'
-                  onClick={() => setIsOpenForm(true)}  
-                >Create New Rule</button>
+                {UserType !== "Customer" && (
+                  <button 
+                    className='bg-orange-400 px-4 py-3 w-full md:w-auto rounded-lg text-[12px] hover:bg-orange-300 duration-300 transition-colors'
+                    onClick={() => setIsOpenForm(true)}  
+                  >Create New Rule</button>
+                )}
                 <div className='min-h-[50vh] mt-3 w-full overflow-y-auto overflow-x-auto'>
                   <DataTable 
                     slug="rules" 

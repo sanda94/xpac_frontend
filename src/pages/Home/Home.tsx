@@ -5,6 +5,7 @@ import './home.scss';
 import { useNavigate } from 'react-router-dom';
 import { useBaseUrl } from '../../context/BaseUrl/BaseUrlContext';
 import axios from 'axios';
+import { useToast } from '../../context/Alert/AlertContext';
 
 type Counts = {
   adminCount:string,
@@ -20,6 +21,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const { baseUrl } = useBaseUrl();
   const [counts , setCounts] = useState<Counts>();
+  const {notify} = useToast();
 
   if (colors) {
     document.documentElement.style.setProperty('--border-color', colors.grey[100]);
@@ -32,7 +34,7 @@ const Home: React.FC = () => {
     }else{
       FetchData();
     }
-  },[Token]);
+  },[]);
 
   const FetchData = async () => {
     try {
@@ -44,8 +46,9 @@ const Home: React.FC = () => {
       if (countsResponse.data.status) {
         setCounts(countsResponse.data.data);
       }
-    } catch (error) {
-      console.error("Error fetching data", error);
+    } catch (error:any) {
+      console.log(error);
+      notify(error.response.data.error.message, "error"); 
     }
   };
 

@@ -66,9 +66,9 @@ const Location:React.FC = () => {
             //     notify("Data Not Found!", "info");
             //     return;
             // }
-        } catch (error) {
-            console.error(error);
-            //notify("An unexpected error occurred. Please try again later.", "error"); 
+        } catch (error:any) {
+          console.log(error);
+          notify(error.response.data.error.message, "error"); 
         }
       }
 
