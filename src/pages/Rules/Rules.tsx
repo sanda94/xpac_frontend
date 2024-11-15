@@ -395,8 +395,8 @@ const Devices: React.FC = () => {
 
       {/* Popup Form for Adding New Rule */}
       {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-5 bg-black bg-opacity-50">
-          <div className="w-full p-8 bg-white rounded-lg lg:w-2/3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-5 overflow-y-auto bg-black bg-opacity-50">
+          <div className="w-full p-8 bg-white rounded-lg max-h-[90vh] overflow-y-auto lg:w-2/3">
             <h2 className="mb-4 text-lg font-bold text-center text-black">Add New Rule</h2>
             <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
               <div>
@@ -448,20 +448,20 @@ const Devices: React.FC = () => {
                 <option value="No">No</option>
               </select>
               </div>
-            </div>
-            {UserType === "Admin" && (
+              {UserType === "Admin" && (
               <div
-                className="flex justify-start mt-6 space-x-4"
+                className="py-2"
               >
                 <button
                 onClick={handelAddAllDevicesButton}
-                  className="px-4 py-3 text-[12px] w-full lg:w-1/2 bg-orange-400 rounded-lg hover:bg-orange-300 transition-colors duration-300"
+                  className="px-4 py-3 text-[12px] w-full bg-orange-400 rounded-lg hover:bg-orange-300 transition-colors duration-300"
                 >
                   Create for All Devices
                 </button>
             </div>
             )}
-            <div className="flex justify-end mt-6 space-x-4">
+            </div>
+            <div className="flex justify-end mt-5 space-x-4">
               <button
                 className="px-4 py-3 text-[12px] w-full bg-gray-400 rounded-lg hover:bg-gray-300 transition-colors duration-300"
                 onClick={() => setIsFormOpen(false)}
