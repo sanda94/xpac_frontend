@@ -94,7 +94,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar }) => {
                 {!isCollapsed && (
                     <div className='flex items-center justify-center w-full mt-5 mb-5'>
                     <img 
-                        className='w-[80px] h-[80px]'
+                        className='w-[130px] h-auto'
                         alt='Logo'
                         src={Images.logo}
                     />

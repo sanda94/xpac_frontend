@@ -3,7 +3,7 @@ const Images = {
     unknownUser: "/unknown-user.png",
     unknownDevice: "/unknown-device.png",
     unknownRule: "/unknown-rule.png",
-    logo:"/lsanda.svg"
+    logo:"/xpac-logo.png"
 };
 
 export default Images;
