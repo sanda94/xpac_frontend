@@ -113,6 +113,7 @@ const Devices: React.FC = () => {
   const { notify } = useToast();
   const [users , setUsers] = useState<User[]>([]);
   const [devices , setDevices] = useState<Device[]>([]);
+  const [isLoading , setLoading] = useState<boolean>(true); 
 
   useEffect(() => {
     if(!Token){
@@ -160,6 +161,8 @@ const Devices: React.FC = () => {
     } catch (error:any) {
       console.error(error);
       notify(error.response.data.error.message , "error"); 
+    }finally{
+      setLoading(false);
     }
   };
   
@@ -379,20 +382,25 @@ const Devices: React.FC = () => {
           Add New Rule
         </button>}
       </div>
-      {rules.length > 0 ? (
-        <div className="min-h-[75vh] mt-5 overflow-y-auto">
-          <DataTable 
-            slug="rules" 
-            columns={columns} 
-            rows={rules}
-            statusChange={statusChange}
-            fetchData={FetchData} 
-          />
-        </div>
+      {isLoading ? (
+        <div style={{color:colors.grey[100]}} className='mt-10 text-lg font-semibold'>Loading...</div>
       ) : (
-        <p style={{color:colors.grey[100]}} className='mt-10 text-lg font-semibold'>No Data Available...</p>
-      )}
-
+          <div>
+            {rules.length > 0 ? (
+              <div className="min-h-[75vh] mt-5 overflow-y-auto">
+                <DataTable 
+                  slug="rules" 
+                  columns={columns} 
+                  rows={rules}
+                  statusChange={statusChange}
+                  fetchData={FetchData} 
+                />
+              </div>
+            ) : (
+              <p style={{color:colors.grey[100]}} className='mt-10 text-lg font-semibold'>No Data Available...</p>
+            )}
+          </div>
+       )}
       {/* Popup Form for Adding New Rule */}
       {isFormOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-5 overflow-y-auto bg-black bg-opacity-50">

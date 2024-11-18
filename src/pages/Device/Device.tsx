@@ -64,6 +64,7 @@ type Location = {
 
 type LineChartData = {
   dateCreated: string,
+  timeCreated:string,
   totalWeight: number,
   batteryPercentage: number,
   batteryVoltage: number,
@@ -115,7 +116,7 @@ type TimeRange = 'day' | 'week' | 'month' | 'threeMonths' | 'sixMonths' | 'year'
 
 const Device: React.FC = () => {
   const { theme , colors } = useTheme();
-  const [selectedRange, setSelectedRange] = useState<TimeRange>('week');
+  const [selectedRange, setSelectedRange] = useState<TimeRange>('day');
   const [showEditDetails, setShowEditDetails] = useState<boolean>(false);
   const [isOpenForm , setIsOpenForm] = useState<boolean>(false);
   const [deviceData, setDeviceData] = useState<Device>({
@@ -198,6 +199,8 @@ const Device: React.FC = () => {
     emailStatus:""
   })
   const [deviceDetails , setDeviceDetails] = useState<{
+    dateCreated:string,
+    timeCreated:string,
     batteryVoltage:number,
     batteryPercentage:number,
     totalWeight:number,
@@ -205,6 +208,8 @@ const Device: React.FC = () => {
     itemCountIncreaseBy:number,
     itemCountDecreaseBy:number
   }>({
+    dateCreated:"",
+    timeCreated:"",
     batteryPercentage:0,
     batteryVoltage:0,
     totalWeight:0,
@@ -220,6 +225,7 @@ const Device: React.FC = () => {
   const [threeMonthsData , setThreeMonthsData] = useState<LineChartData[]>([]);
   const [sixMonthsData , setSixMonthsData] = useState<LineChartData[]>([]);
   const [yearData , setYearData] = useState<LineChartData[]>([]);
+  const [isLoading , setLoading] = useState<boolean>(true); 
 
   console.log(todayData);
 
@@ -245,6 +251,7 @@ const Device: React.FC = () => {
         axios.get(`${baseUrl}/rules/all/device/${deviceId}`, {
           headers: {
             token: `Bearer ${Token}`,
+            usertype:UserType
           },
         }),
         axios.get(
@@ -305,6 +312,8 @@ const Device: React.FC = () => {
     } catch (error:any) {
       console.log(error);
       notify(error.response.data.error.message, "error"); 
+    }finally{
+      setLoading(false);
     }
   }
 
@@ -320,6 +329,8 @@ const Device: React.FC = () => {
             const deviceDetail = response.data.data[0];
             console.log("Device data",deviceDetail);
             setDeviceDetails({
+              dateCreated:deviceDetail.dateCreated,
+              timeCreated:deviceDetail.timeCreated,
               batteryVoltage: Number(deviceDetail.batteryVoltage),
               batteryPercentage: Number(deviceDetail.batteryPercentage),
               itemCount: Number(deviceDetail.itemCount),
@@ -403,6 +414,20 @@ const Device: React.FC = () => {
 
   // Handle form submission
   const handleSubmit = () => {
+    if(
+      !newDevice.title || 
+      !newDevice.assignProduct || 
+      !newDevice.location || 
+      !newDevice.unitWeight || 
+      !newDevice.minItems ||
+      !newDevice.minBatteryPercentage ||
+      !newDevice.minBatteryVoltage ||
+      !newDevice.category ||
+      !newDevice.status
+    ){
+      notify('Fill all required field before click Save button.', 'error');
+      return;
+    }
     if(newDevice.unitWeight && !isFloatNumberValid(newDevice.unitWeight)){
       notify('Please enter valid unit weight!' , 'error');
       return;
@@ -562,6 +587,7 @@ const Device: React.FC = () => {
           allowOutsideClick: false
         });
         FetchData();
+        FetchDeviceDetails();
         setShowEditDetails(false);
       }
     } catch (error:any) {
@@ -684,20 +710,16 @@ const Device: React.FC = () => {
       location:deviceData.location,
       unitWeight:deviceData.unitWeight,
       minItems:deviceData.minItems,
-      minBatteryPercentage:deviceData.minBatteryPercentage,
       batteryPercentage:deviceDetails.batteryPercentage,
       batteryVoltage:deviceDetails.batteryVoltage,
       totalWeight:deviceDetails.totalWeight,
       itemCount:deviceDetails.itemCount,
       itemCountIncreaseBy:deviceDetails.itemCountIncreaseBy,
       itemCountDecreaseBy: deviceDetails.itemCountDecreaseBy,
-      offSet:deviceData.offSet,
-      calibrationValue: deviceData.calibrationValue,
       status:deviceData.status,
-      minBatteryVoltage:deviceData.minBatteryVoltage,
       refilingStatus:deviceData.refilingStatus,
-      description:deviceData.description,
-      message:deviceData.message,
+      dateCreated:deviceDetails.dateCreated,
+      timeCreated:deviceDetails.timeCreated
     }
 
     const type = "device_data";
@@ -724,15 +746,8 @@ const Device: React.FC = () => {
     assignProduct:deviceData.assignProduct,
     location:deviceData.location,
     unitWeight:deviceData.unitWeight,
-    minItems:deviceData.minItems,
-    minBatteryPercentage:deviceData.minBatteryPercentage,
-    offSet:deviceData.offSet,
-    calibrationValue:deviceData.calibrationValue,
     status:deviceData.status,
-    minBatteryVoltage:deviceData.minBatteryVoltage,
     refilingStatus:deviceData.refilingStatus,
-    description:deviceData.description,
-    message:deviceData.message,
   }));
     
    const  type = selectedRange == "day" ? "today_device_data" :
@@ -750,6 +765,9 @@ const Device: React.FC = () => {
     <div className="">
       {/* Page Header */}
       <PageHeader title="Device" subTitle="This is the Device Details Page." />
+      {isLoading ? (
+          <div style={{color:colors.grey[100]}} className='mt-10 text-lg font-semibold'>Loading...</div>
+        ):(
       <div className={`overflow-y-auto w-full mt-5 p-6 rounded-lg ${theme === 'dark' ? 'bg-white' : 'bg-gray-200'}`}>
       <div className={`grid gap-6 lg:grid-cols-3 min-h-[100vh] w-full`}>
         {/* Device Details Section */}
@@ -763,32 +781,50 @@ const Device: React.FC = () => {
                 className="object-cover w-[25%] cursor-pointer h-auto p-8 mb-4 rounded-lg bg-slate-300"
               />
              <div>
-                <h2 className="mb-4 text-2xl font-semibold text-gray-900">{deviceData.title}</h2>
-                <p className="mb-2 text-gray-600">{deviceData.description}</p>
+                <h2 className="mb-2 text-2xl font-semibold text-gray-900">{deviceData.title}</h2>
+                <p className="mb-2 text-lg italic font-semibold text-gray-800">{deviceData.description}</p>
                 {(UserType === "Admin" || UserType === "Moderator") && (
                   <p className="text-gray-600"><strong>Id:</strong> {deviceData._id ? deviceData._id : "None"}</p>
                 )}
                 <p className="text-gray-600"><strong>Assigned Product:</strong> {deviceData.assignProduct ? deviceData.assignProduct : "None"}</p>
                 <p className="text-gray-600"><strong>Location:</strong> {deviceData.location ? deviceData.location : "None"}</p>
-                <p className="text-gray-600"><strong>Unit Weight:</strong> {deviceData.unitWeight ? `${deviceData.unitWeight}g` : "0g"}</p>
+                <p className="text-gray-600"><strong>Unit Weight:</strong> {deviceData.unitWeight
+                                                                                  ? deviceData.unitWeight.includes("g")
+                                                                                  ? deviceData.unitWeight
+                                                                                  : `${deviceData.unitWeight}g`
+                                                                                  : "0g"}
+                </p>
                 <p className="text-gray-600"><strong>Minimum Items Count:</strong> {deviceData.minItems ? deviceData.minItems : "0"}</p>
-                <p className="text-gray-600"><strong>Minimum Battery Percentage:</strong> {deviceData.minBatteryPercentage ? deviceData.minBatteryPercentage : "0"}%</p>
-                <p className="text-gray-600"><strong>Minimum Battery Voltage:</strong> {deviceData.minBatteryVoltage ? deviceData.minBatteryVoltage : "0"}V</p>
+                <p className="text-gray-600"><strong>Minimum Battery Percentage:</strong> {deviceData.minBatteryPercentage 
+                                                                                   ? deviceData.minBatteryPercentage.includes("%") 
+                                                                                   ? deviceData.minBatteryPercentage
+                                                                                   : `${deviceData.minBatteryPercentage}%` : "0%"}
+                </p>
+                <p className="text-gray-600"><strong>Minimum Battery Voltage:</strong> {deviceData.minBatteryVoltage
+                                                                                    ? `${deviceData.minBatteryVoltage.replace(/v/g, "V")}V`
+                                                                                    : "0V"}
+                </p>
                 <p className="text-gray-600"><strong>Category:</strong> {deviceData.category ? deviceData.category : "None"}</p>
                 <p className="text-gray-600"><strong>Offset:</strong> {deviceData.offSet ? deviceData.offSet : "None"}</p>
                 <p className="text-gray-600"><strong>Calibration Value:</strong> {deviceData.calibrationValue ? deviceData.calibrationValue : "None"}</p>
                 <p className="text-gray-600"><strong>Active Status:</strong> {deviceData.status ? deviceData.status : "None"}</p>
-                <p className="text-gray-600"><strong>Refiling Status:</strong> {deviceData.refilingStatus ? deviceData.refilingStatus :"None"}</p>
+                <p className="text-gray-600"><strong>Refilling Status:</strong> {deviceData.refilingStatus ? deviceData.refilingStatus :"None"}</p>
                 <p className="text-gray-600"><strong>Message:</strong> {deviceData.message ? deviceData.message : "None"}</p>
-                <p className="text-gray-600"><strong>Created On:</strong> {deviceData.dateCreated} at {deviceData.timeCreated}</p>
-                <p className="text-gray-600"><strong>Last Updated:</strong> {deviceData.dateUpdated} at {deviceData.timeUpdated}</p>
+                {UserType !== "Customer" && (
+                  <>
+                    <p className="text-gray-600"><strong>Created On:</strong> {deviceData.dateCreated} at {deviceData.timeCreated}</p>
+                    <p className="text-gray-600"><strong>Last Updated:</strong> {deviceData.dateUpdated} at {deviceData.timeUpdated}</p>
+                  </>
+                )}
                 <div className='flex items-center justify-start gap-8'>
-                <button
-                  className="w-full px-4 py-3 mt-5 transition-colors duration-300 text-[12px] bg-green-300 rounded-md lg:w-auto hover:bg-green-200"
-                  onClick={() => setShowEditDetails(true)}
-                >
-                  Edit Details
-                </button>
+                  {UserType === "Admin" && (
+                    <button
+                      className="w-full px-4 py-3 mt-5 transition-colors duration-300 text-[12px] bg-green-300 rounded-md lg:w-auto hover:bg-green-200"
+                      onClick={() => setShowEditDetails(true)}
+                    >
+                      Edit Details
+                    </button>
+                  )}
                 <button
                   onClick={downloadCurrentDetails}
                   className="w-full px-4 py-3 mt-5 transition-colors text-[12px] duration-300 bg-orange-300 rounded-md lg:w-auto hover:bg-orange-200"
@@ -800,7 +836,7 @@ const Device: React.FC = () => {
                    onClick={handelDeleteAllButton}
                    className="w-full px-4 py-3 mt-5 transition-colors text-[12px] duration-300 bg-red-300 rounded-md lg:w-auto hover:bg-red-200"
                  >
-                   Delete All
+                   Reset Data
                  </button>
                 )}
                 </div>
@@ -810,65 +846,62 @@ const Device: React.FC = () => {
 
           {/* Circular Progress Bars */}
         { deviceDetails && (<div className="flex flex-col items-center justify-center w-full gap-5 mt-6 mb-6 md:grid md:grid-cols-2 xl:grid-cols-4">
-          {/* Battery Percentage */}
-          {deviceDetails && deviceDetails.batteryPercentage !== 0 && 
-            <div className='flex items-center justify-center w-full h-full'>
-            <CircularProgressBar
-                CurrentValue={deviceDetails.batteryPercentage}
-                StartValue={0}
-                EndValue={100}
-                LowValue={20}
-                HighValue={75}
-                Units="%"
-                InnerColor="#F78F5E"
-                TextColor="#000000"
-                Icon={Icons.battery}
-                Title="Battery Percentage"
-              />
-            </div>
-          }
-         {deviceDetails && deviceDetails.batteryVoltage !== 0 && 
-            <div className='flex items-center justify-center w-full h-full'>
-                {/* Battery Voltage */}
-                <CircularProgressBar
-                  CurrentValue={deviceDetails.batteryVoltage}
-                  StartValue={0}
-                  EndValue={100}
-                  LowValue={10}
-                  HighValue={25}
-                  Units="V"
-                  InnerColor="#F78F5E"
-                  TextColor="#000000"
-                  Icon={Icons.voltageMeter}
-                  Title="Battery Voltage"
-                />
-            </div>
-          }
-         {deviceDetails && deviceDetails.itemCount !== 0 && 
+          {deviceDetails && 
             <div className='flex items-center justify-center w-full h-full'>
               {/* Item Count */}
               <CircularProgressBar
-                CurrentValue={deviceDetails.itemCount}
+                CurrentValue={deviceDetails.itemCount !== 0 ? deviceDetails.itemCount : 0}
                 StartValue={0}
-                EndValue={100}
-                LowValue={10}
-                HighValue={80}
+                EndValue={deviceDetails.itemCount > 100 ? deviceDetails.itemCount : 100}
+                LowValue={Number(deviceData.minItems)}
                 Units=""
-                InnerColor="#F78F5E"
+                InnerColor="#f78f5e"
                 TextColor="#000000"
                 Icon={Icons.itemCount}
                 Title="Item Count"
               />
             </div>
           }
-         {deviceDetails && deviceDetails.totalWeight !== 0 && 
+          {/* Battery Percentage */}
+          {deviceDetails && 
+            <div className='flex items-center justify-center w-full h-full'>
+            <CircularProgressBar
+                CurrentValue={deviceDetails.batteryPercentage !== 0 ? deviceDetails.batteryPercentage : 0}
+                StartValue={0}
+                EndValue={100}
+                LowValue={Number(deviceData.minBatteryPercentage)}
+                Units="%"
+                InnerColor="#5e99f7"
+                TextColor="#000000"
+                Icon={Icons.battery}
+                Title="Battery Percentage"
+              />
+            </div>
+          }
+         {deviceDetails && UserType !== "Customer" &&
+            <div className='flex items-center justify-center w-full h-full'>
+                {/* Battery Voltage */}
+                <CircularProgressBar
+                  CurrentValue={deviceDetails.batteryVoltage !== 0 ? deviceDetails.batteryVoltage : 0}
+                  StartValue={0}
+                  EndValue={deviceDetails.batteryVoltage > 100 ?  deviceDetails.batteryVoltage : 100}
+                  LowValue={Number(deviceData.minBatteryVoltage)}
+                  Units="V"
+                  InnerColor="#b583f2"
+                  TextColor="#000000"
+                  Icon={Icons.voltageMeter}
+                  Title="Battery Voltage"
+                />
+            </div>
+          }
+         {deviceDetails && UserType !== "Customer" &&
             <div className='flex items-center justify-center w-full h-full'>
                 {/* Total Weight */}
                 <Circle
                   title="Total Weight"
-                  value={`${deviceDetails.totalWeight} g`}
-                  unVal={String(deviceDetails.totalWeight)}
-                  bgColor="#F78F5E"
+                  value={`${deviceDetails.totalWeight !== 0 ? deviceDetails.totalWeight : 0} g`}
+                  unVal={String(deviceDetails.totalWeight !== 0 ? deviceDetails.totalWeight : 0)}
+                  bgColor="#f0f75e"
                   icon={Icons.totalWeight}
                 />
             </div>
@@ -911,26 +944,29 @@ const Device: React.FC = () => {
         </div>
         </div>
         {/* Table Data */}
-        <div className='col-span-1 lg:col-span-3'>
-              <div className='flex flex-col items-center justify-center gap-4 p-2 md:items-start lg:justify-start'>
-                {UserType !== "Customer" && (
-                  <button 
-                    className='bg-orange-400 px-4 py-3 w-full md:w-auto rounded-lg text-[12px] hover:bg-orange-300 duration-300 transition-colors'
-                    onClick={() => setIsOpenForm(true)}  
-                  >Create New Rule</button>
-                )}
-                <div className='min-h-[50vh] mt-3 w-full overflow-y-auto overflow-x-auto'>
-                  <DataTable 
-                    slug="rules" 
-                    columns={columns} 
-                    rows={rules}
-                    statusChange={statusChange}
-                    fetchData={FetchData} 
-                  />
+        {UserType !== "Customer" && (
+          <div className='col-span-1 lg:col-span-3'>
+                <div className='flex flex-col items-center justify-center gap-4 p-2 md:items-start lg:justify-start'>
+                  {UserType === "Admin" && (
+                    <button 
+                      className='bg-orange-400 px-4 py-3 w-full md:w-auto rounded-lg text-[12px] hover:bg-orange-300 duration-300 transition-colors'
+                      onClick={() => setIsOpenForm(true)}  
+                    >Create New Rule</button>
+                  )}
+                  <div className='min-h-[50vh] mt-3 w-full overflow-y-auto overflow-x-auto'>
+                    <DataTable 
+                      slug="rules" 
+                      columns={columns} 
+                      rows={rules}
+                      statusChange={statusChange}
+                      fetchData={FetchData} 
+                    />
+                  </div>
                 </div>
               </div>
+            )}
             </div>
-            </div>
+        )}
       {/* Modal for Editing Details */}
       {showEditDetails && (
         <div className="fixed inset-0 z-50 flex items-center justify-center h-full p-4 bg-black bg-opacity-50">
@@ -939,7 +975,7 @@ const Device: React.FC = () => {
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               {/* Title */}
               <div>
-                <label htmlFor="title" className="w-full font-semibold text-[13px]">Title</label>
+                <label htmlFor="title" className="w-full font-semibold text-[13px]">Title <strong className='text-red-500 text-[12px]'>*</strong></label>
                 <input
                   type="text"
                   id="title"
@@ -952,7 +988,7 @@ const Device: React.FC = () => {
               </div>
               {/* Assigned Product */}
               <div>
-                <label htmlFor="assignProduct" className="w-full font-semibold text-[13px]">Assigned Product</label>
+                <label htmlFor="assignProduct" className="w-full font-semibold text-[13px]">Assigned Product <strong className='text-red-500 text-[12px]'>*</strong></label>
                 <input
                   id="assignProduct"
                   name="assignProduct"
@@ -964,7 +1000,7 @@ const Device: React.FC = () => {
               </div>
               {/* Location */}
               <div>
-                <label htmlFor="location" className="w-full font-semibold text-[13px]">Location</label>
+                <label htmlFor="location" className="w-full font-semibold text-[13px]">Location <strong className='text-red-500 text-[12px]'>*</strong></label>
                 <select
                   name="location"
                   onChange={(e) => setNewDevice({...newDevice , location:e.target.value})}
@@ -978,7 +1014,7 @@ const Device: React.FC = () => {
               </div>
               {/* Assigned Product */}
               <div>
-                <label htmlFor="unitWeight" className="w-full font-semibold text-[13px]">Unit Weight &#40;g&#41;</label>
+                <label htmlFor="unitWeight" className="w-full font-semibold text-[13px]">Unit Weight &#40;g&#41; <strong className='text-red-500 text-[12px]'>*</strong></label>
                 <input
                   id="unitweight"
                   name="unitWeight"
@@ -990,7 +1026,7 @@ const Device: React.FC = () => {
               </div>
               {/* Minimum count */}
               <div>
-                <label htmlFor="minItems" className="w-full font-semibold text-[13px]">Minimum Items Count</label>
+                <label htmlFor="minItems" className="w-full font-semibold text-[13px]">Minimum Items Count <strong className='text-red-500 text-[12px]'>*</strong></label>
                 <input
                   id="minItems"
                   name="minItems"
@@ -1001,7 +1037,7 @@ const Device: React.FC = () => {
                 />
               </div>
               <div>
-                <label htmlFor="minBatteryPercentage" className="w-full font-semibold text-[13px]">Minimum Battery Percentage &#40;%&#41;</label>
+                <label htmlFor="minBatteryPercentage" className="w-full font-semibold text-[13px]">Minimum Battery Percentage &#40;%&#41; <strong className='text-red-500 text-[12px]'>*</strong></label>
                 <input
                   id="minBatteryPercentage"
                   name="minBatteryPercentage"
@@ -1012,7 +1048,7 @@ const Device: React.FC = () => {
                 />
               </div>
               <div>
-                <label htmlFor="minBatteryVoltage" className="w-full font-semibold text-[13px]">Minimum Battery Voltage &#40;V&#41;</label>
+                <label htmlFor="minBatteryVoltage" className="w-full font-semibold text-[13px]">Minimum Battery Voltage &#40;V&#41; <strong className='text-red-500 text-[12px]'>*</strong></label>
                 <input
                   id="minBatteryVoltage"
                   name="minBatteryVoltage"
@@ -1023,7 +1059,7 @@ const Device: React.FC = () => {
                 />
               </div>
               <div className="">
-                <label htmlFor="status" className="w-full font-semibold text-[13px]">Select Device Status</label>
+                <label htmlFor="status" className="w-full font-semibold text-[13px]">Select Device Status <strong className='text-red-500 text-[12px]'>*</strong></label>
                 <select
                   name="status"
                   value={newDevice.status}
@@ -1036,7 +1072,7 @@ const Device: React.FC = () => {
               </div>
 
                 <div className="">
-                <label htmlFor="refilingStatus" className="w-full font-semibold text-[13px]">Refiling Status</label>
+                <label htmlFor="refilingStatus" className="w-full font-semibold text-[13px]">Refilling Status</label>
                   <select
                     name="refilingStatus"
                     value={newDevice.refilingStatus}
@@ -1044,13 +1080,13 @@ const Device: React.FC = () => {
                     className="w-full p-2 mt-2  text-[12px] border rounded-md"
                   >
                     <option value="None">None</option>
-                    <option value="Refiling Start">Refiling Started</option>
-                    <option value="Refiling Done">Refiling Done</option>
+                    <option value="Refilling Start">Refilling Started</option>
+                    <option value="Refilling Done">Refilling Done</option>
                   </select>
                 </div>
 
                 <div className="">
-                <label htmlFor="image" className="w-full font-semibold text-[13px]">Category</label>
+                <label htmlFor="image" className="w-full font-semibold text-[13px]">Category <strong className='text-red-500 text-[12px]'>*</strong></label>
                 <select
                   name="category"
                   value={newDevice.category}

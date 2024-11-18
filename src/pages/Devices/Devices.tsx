@@ -84,6 +84,7 @@ const Devices: React.FC = () => {
   });
   const [categories , setCategories] = useState<Category[]>([])
   const [locations , setLocations] = useState<Location[]>([]);
+  const [isLoading , setLoading] = useState<boolean>(true); 
 
   useEffect(() => {
     if(!Token){
@@ -97,7 +98,7 @@ const Devices: React.FC = () => {
 
   const FetchData = async() => {
     try {
-      const url = UserType === "Customer" ? `${baseUrl}/device/all/${UserId}` :  `${baseUrl}/device/all`;
+      const url = UserType === "Admin" ? `${baseUrl}/device/all` : `${baseUrl}/device/all/${UserId}`;
       const response = await axios.get(
         url,{
           headers: {
@@ -112,6 +113,8 @@ const Devices: React.FC = () => {
     } catch (error:any) {
       console.log(error);
       notify(error.response.data.error.message, "error"); 
+    }finally{
+      setLoading(false);
     }
   }
 
@@ -241,6 +244,8 @@ const Devices: React.FC = () => {
         !formData.location || 
         !formData.unitWeight || 
         !formData.minItemsCount ||
+        !formData.minBatteryPercentage ||
+        !formData.minBatteryVoltage ||
         !formData.category ||
         !formData.status
       ){
@@ -391,11 +396,11 @@ const ClearData = () => {
 }
 
 const columns: GridColDef[] = [
-  {
+  ...(UserType !== "Customer" ? [{
     field: '_id',
     headerName: 'Id',
     minWidth:250
-  },
+  }]:[]),
   {
     field: 'imageTitle',
     headerName: 'Device',
@@ -468,7 +473,7 @@ const columns: GridColDef[] = [
   },
   {
     field: 'refilingStatus',
-    headerName: 'Refiling Status',
+    headerName: 'Refilling Status',
     minWidth:150
   },
   {
@@ -480,26 +485,28 @@ const columns: GridColDef[] = [
     field: 'message',
     headerName: 'Message',
     minWidth:150
-  },{
-    field: "status",
-    headerName: "Active Status",
-    minWidth:150,
-    renderCell: (params: any) => {
-      const isActive = params.row.status === "Active";
-      return (
-        <div className='flex items-center justify-center w-full h-full'>
-          <button
-            onClick={() => HandleStatus(params.row._id, isActive ? "Inactive" : "Active")}
-            className={`px-3 py-2 h-[62%] min-w-[85px] w-full flex items-center text-[12px] justify-center rounded-md transition-colors duration-300 text-black ${
-              isActive ? 'bg-green-500 hover:bg-green-400' : 'bg-red-500 hover:bg-red-400'
-            }`}
-          >
-            {isActive ? "Active" : "Inactive"}
-          </button>
-        </div>
-      );
+  },...(UserType !== "Customer" ? [
+    {
+      field: "status",
+      headerName: "Active Status",
+      minWidth:150,
+      renderCell: (params: any) => {
+        const isActive = params.row.status === "Active";
+        return (
+          <div className='flex items-center justify-center w-full h-full'>
+            <button
+              onClick={() => HandleStatus(params.row._id, isActive ? "Inactive" : "Active")}
+              className={`px-3 py-2 h-[62%] min-w-[85px] w-full flex items-center text-[12px] justify-center rounded-md transition-colors duration-300 text-black ${
+                isActive ? 'bg-green-500 hover:bg-green-400' : 'bg-red-500 hover:bg-red-400'
+              }`}
+            >
+              {isActive ? "Active" : "Inactive"}
+            </button>
+          </div>
+        );
+      },
     },
-  },
+  ]:[]),
   // {
   //   field: 'dateCreated',
   //   headerName: 'Created At',
@@ -518,25 +525,31 @@ const columns: GridColDef[] = [
     <div>
       <div className="flex items-center justify-between gap-10 lg:justify-start">
         <PageHeader title="DEVICES MANAGEMENT" subTitle="This is The Devices Management Page." />
-        {UserType !== "Customer" && <button
+        {UserType === "Admin" && <button
           onClick={() => setIsFormOpen(true)}
           className={`bg-orange-400 px-4 text-[12px] py-3 rounded-md hover:bg-orange-300 duration-300 transition-colors`}
         >
           Add New Device
         </button>}
       </div>
-      {deviceData.length > 0 ? (
-        <div className="min-h-[100vh] mt-5 overflow-y-auto">
-          <DataTable
-            slug="device"
-            columns={columns}
-            rows={deviceData}
-            statusChange={HandleStatus}
-            fetchData={FetchData}
-          />
-        </div>
+      {isLoading ? (
+        <div style={{color:colors.grey[100]}} className='mt-10 text-lg font-semibold'>Loading...</div>
       ) : (
-        <p style={{ color: colors.grey[100] }} className='mt-10 text-lg font-semibold'>No Data Available...</p>
+        <div>
+          {deviceData.length > 0 ? (
+            <div className="min-h-[100vh] mt-5 overflow-y-auto">
+              <DataTable
+                slug="device"
+                columns={columns}
+                rows={deviceData}
+                statusChange={HandleStatus}
+                fetchData={FetchData}
+              />
+            </div>
+          ) : (
+            <p style={{ color: colors.grey[100] }} className='mt-10 text-lg font-semibold'>No Data Available...</p>
+          )}
+        </div>
       )}
 
       {isFormOpen && (
@@ -580,7 +593,7 @@ const columns: GridColDef[] = [
                   ))}
                 </select>
               </div>
-              {/* Minimum count */}
+              {/* Unit weight */}
               <div>
                 <label htmlFor="unitWeight" className="w-full font-semibold text-[13px]">Unit Weight &#40;g&#41; <strong className='text-red-500 text-[12px]'>*</strong></label>
                 <input
@@ -591,7 +604,7 @@ const columns: GridColDef[] = [
                   className="w-full p-2 mt-2 text-[12px] border rounded-md"
                 />
               </div>
-              {/* Minimum count */}
+              {/* Minimum Item count */}
               <div>
                 <label htmlFor="minItems" className="w-full font-semibold text-[13px]">Minimum Items Count <strong className='text-red-500 text-[12px]'>*</strong></label>
                 <input
@@ -604,7 +617,7 @@ const columns: GridColDef[] = [
               </div>
               {/* Maximum Battery Percentage */}
               <div>
-                <label htmlFor="minBattery" className="w-full font-semibold text-[13px]">Minimum Battery Percentage &#40;%&#41; </label>
+                <label htmlFor="minBattery" className="w-full font-semibold text-[13px]">Minimum Battery Percentage &#40;%&#41; <strong className='text-red-500 text-[12px]'>*</strong> </label>
                 <input
                   id="minBattery"
                   name="minBattery"
@@ -615,7 +628,7 @@ const columns: GridColDef[] = [
               </div>
               {/* Maximum Battery Volatage */}
               <div>
-                <label htmlFor="minVoltage" className="w-full font-semibold text-[13px]">Minimum Battery Voltage &#40;V&#41;</label>
+                <label htmlFor="minVoltage" className="w-full font-semibold text-[13px]">Minimum Battery Voltage &#40;V&#41; <strong className='text-red-500 text-[12px]'>*</strong></label>
                 <input
                   id="minVoltage"
                   name="minVoltage"
@@ -661,11 +674,11 @@ const columns: GridColDef[] = [
               </div>
               { /* Off Set */}
               <div>
-                <label htmlFor="offSet" className="w-full font-semibold text-[13px]">Off Set</label>
+                <label htmlFor="offSet" className="w-full font-semibold text-[13px]">Offset</label>
                 <input
                   id="offSet"
                   name="OffSet"
-                  placeholder='Off Set'
+                  placeholder='Offset'
                   onChange={(e) => setFormData({...formData , offSet:e.target.value})}
                   className="w-full p-2 mt-2 text-[12px] border rounded-md"
                 />

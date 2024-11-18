@@ -43,6 +43,7 @@ const Location:React.FC = () => {
         location:"",
         description:""
     });
+    const [isLoading , setLoading] = useState<boolean>(true); 
 
     useEffect(() => {
         if(!Token){
@@ -69,6 +70,8 @@ const Location:React.FC = () => {
         } catch (error:any) {
           console.log(error);
           notify(error.response.data.error.message, "error"); 
+        }finally{
+          setLoading(false);
         }
       }
 
@@ -153,18 +156,24 @@ const Location:React.FC = () => {
           Add New Location
         </button>}
       </div>
-      {locationData.length > 0 ? (
-        <div className="min-h-[75vh] mt-5 overflow-y-auto">
-          <DataTable 
-            slug="locations" 
-            columns={columns} 
-            rows={locationData}
-            statusChange={statusChange}
-            fetchData={FetchData} 
-          />
-        </div>
+      {isLoading ? (
+        <div style={{color:colors.grey[100]}} className='mt-10 text-lg font-semibold'>Loading...</div>
       ) : (
-        <p style={{color:colors.grey[100]}} className='mt-10 text-lg font-semibold'>No Data Available...</p>
+          <div>
+            {locationData.length > 0 ? (
+                <div className="min-h-[75vh] mt-5 overflow-y-auto">
+                  <DataTable 
+                    slug="locations" 
+                    columns={columns} 
+                    rows={locationData}
+                    statusChange={statusChange}
+                    fetchData={FetchData} 
+                  />
+                </div>
+              ) : (
+                <p style={{color:colors.grey[100]}} className='mt-10 text-lg font-semibold'>No Data Available...</p>
+              )}
+          </div>
       )}
 
       {/* Popup Form for Adding New Rule */}

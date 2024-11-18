@@ -53,6 +53,7 @@ const Users: React.FC = () => {
     image: null,
     password: ""
   });
+  const [isLoading , setLoading] = useState<boolean>(true); 
 
   useEffect(() => {
     if(!Token){
@@ -63,16 +64,25 @@ const Users: React.FC = () => {
   },[Token]);
 
   const FetchData = async() => {
+    let url:string;
+    if(UserType === "Admin"){
+      url = `${baseUrl}/users/all/except`
+    }else if(UserType === "Moderator"){
+      url =  `${baseUrl}/users/all/mod`
+    }else{
+      url = ""
+    }
     const data = {
       userId: UserId
     }
     try {
-      const response = await axios.post(
-        `${baseUrl}/users/all/except`, data , {
+      const response = await axios.post(url, data , 
+        {
           headers: {
             token: `Bearer ${Token}`,
           },
         });
+        console.log(response.data.users);
       if(response.data.status){
           setUserData(response.data.users);
       }else{
@@ -81,10 +91,11 @@ const Users: React.FC = () => {
     } catch (error:any) {
       console.log(error);
       notify(error.response.data.error.message, "error"); 
+    }finally{
+      setLoading(false);
     }
   }
 
-  console.log(userData);
   const openForm = () => {
     setIsFormOpen(!isOpenForm);
   };
@@ -278,6 +289,11 @@ const Users: React.FC = () => {
 
   const columns: GridColDef[] = [
     {
+      field: '_id',
+      headerName: 'Id',
+      minWidth:250
+    },
+    {
       field: "profile",
       headerName: "Profile",
       maxWidth:300,
@@ -364,14 +380,19 @@ const Users: React.FC = () => {
           </button>
         ) : null}
       </div>
-      {userData.length > 0 ? (
-        <div className="min-h-[100vh] mt-5 overflow-y-auto">
-          <DataTable slug="users" statusChange={updateStatus} columns={columns} rows={userData} fetchData={FetchData} />
-        </div>
+      {isLoading ? (
+        <div style={{color:colors.grey[100]}} className='mt-10 text-lg font-semibold'>Loading...</div>
       ) : (
-        <p style={{color:colors.grey[100]}} className='mt-10 text-lg font-semibold'>No Data Available...</p>
+        <div>
+          {userData.length > 0 ? (
+            <div className="min-h-[100vh] mt-5 overflow-y-auto">
+              <DataTable slug="users" statusChange={updateStatus} columns={columns} rows={userData} fetchData={FetchData} />
+            </div>
+          ) : (
+            <p style={{color:colors.grey[100]}} className='mt-10 text-lg font-semibold'>No Data Available...</p>
+          )}
+        </div>
       )}
-
       {isOpenForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-5 bg-black bg-opacity-50">
           <div className="w-full p-6 bg-white rounded-lg h-auto sm:max-h-[90vh] overflow-y-auto shadow-lg lg:w-2/3">

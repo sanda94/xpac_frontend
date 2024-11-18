@@ -9,7 +9,7 @@ interface LineChartProps {
 const LineChart: React.FC<LineChartProps> = ({ data }) => {
   console.log(data);
   return (
-    <div style={{ width: '100%', height: 400}}>
+    <div style={{ width: '100%', height: 530}}>
       <ResponsiveContainer>
         <RechartsLineChart
           data={data}

@@ -146,6 +146,8 @@ const UserProfile:React.FC = () => {
     emailStatus:""
   });
 
+  const [isLoading , setLoading] = useState<boolean>(true);
+
   useEffect(() => {
     if(!Token){
       navigate("/");
@@ -196,6 +198,8 @@ const UserProfile:React.FC = () => {
     } catch (error:any) {
       console.log(error);
       notify(error.response.data.error.message, "error"); 
+    }finally{
+      setLoading(false);
     }
   }
 
@@ -463,6 +467,10 @@ const UserProfile:React.FC = () => {
   }
 
   return (
+    <div>
+      {isLoading ? (
+        <div style={{color:colors.grey[100]}} className='mt-10 text-lg font-semibold'>Loading...</div>
+      ) : (      
     <div className={`max-w-6xl p-8 mx-auto mt-8 rounded-lg shadow-lg ${theme === 'light' ? "bg-gray-300" : "bg-white" }`}>
       {/* Profile Header */}
       <div className="flex flex-col items-center justify-start lg:space-x-8 lg:items-start lg:flex-row">
@@ -478,6 +486,9 @@ const UserProfile:React.FC = () => {
         {/* Profile Details */}
         <div className='cursor-default'>
           <h1 className="mt-2 mb-2 text-2xl font-bold text-center text-gray-900 lg:mt-0 lg:text-start">{UserData?.fullName}</h1>
+          {UserType !== "Customer" && 
+            <p className="mb-1 text-center text-gray-600 lg:mt-0 lg:text-start">{UserData?._id}</p>
+          }
           <p className="mb-1 text-center text-gray-600 lg:mt-0 lg:text-start">{UserData?.emailAddress}</p>
           <p className="mb-1 text-center text-gray-600 lg:mt-0 lg:text-start">{UserData?.phoneNumber}</p>
           <p className="mb-1 text-center text-gray-600 lg:mt-0 lg:text-start">{UserData?.address}</p>
@@ -511,7 +522,7 @@ const UserProfile:React.FC = () => {
         </div>
 
         {/* Edit Button - Only show if userId and storedUserId are different */}
-        {(UserType === "Admin" || (UserType === "Moderator" && UserUpdateData.userType !== "Admin") || (UserId === userId)) && (
+        {(UserType === "Admin" || (UserId === userId)) && (
           <div className="flex items-end justify-end w-full h-full md:mb-8">
             <button
               className="px-4 py-3 w-full text-[12px] md:w-auto text-white bg-blue-400 hover:bg-blue-300 transition-colors duration-300 rounded-lg"
@@ -683,19 +694,25 @@ const UserProfile:React.FC = () => {
       </div>     
       )}
       <div className='flex flex-col w-full gap-5 p-2 mt-6 overflow-x-auto md:items-start md:justify-start'>
-       { UserType !== "Customer" && <button 
-          className='bg-orange-400 px-4 text-[12px] py-3 rounded-md text-black hover:bg-orange-300 duration-300 transition-colors'
-          onClick={() => setIsFormOpen(true)}
-        >Create New Rule</button>}
-        <div className='w-full'>
-          <DataTable 
-            slug="rules" 
-            columns={columns} 
-            rows={rules}
-            statusChange={handleAction}
-            fetchData={FetchData}
-          />
-        </div>
+       { UserType !== "Customer" && 
+          <>
+            {UserType === "Admin" && (
+              <button 
+                  className='bg-orange-400 px-4 text-[12px] py-3 rounded-md text-black hover:bg-orange-300 duration-300 transition-colors'
+                  onClick={() => setIsFormOpen(true)}
+                >Create New Rule</button>
+              )}
+              <div className='w-full'>
+                <DataTable 
+                  slug="rules" 
+                  columns={columns} 
+                  rows={rules}
+                  statusChange={handleAction}
+                  fetchData={FetchData}
+                />
+              </div>
+            </>
+        }
     </div>
     {isFormOpen && (
       <div className="fixed inset-0 z-50 flex items-center justify-center mt-5 bg-black bg-opacity-50">
@@ -778,6 +795,8 @@ const UserProfile:React.FC = () => {
         </div>
       )}
     </div>
+  )}
+  </div>
   )
 }
 

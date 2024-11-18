@@ -34,6 +34,8 @@ type DeviceData = {
   refilingStatus: string;
   description: string;
   message: string;
+  dateCreated:string;
+  timeCreated:string;
 }
 
 // SortableItem component using dnd-kit
@@ -55,6 +57,7 @@ const Summary: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>(''); // State to capture search input
   const [filteredData, setFilteredData] = useState<DeviceData[]>([]); // State for filtered data
   const [isDragEnabled, setIsDragEnabled] = useState<boolean>(false); // State for enabling/disabling drag-and-drop
+  const [isLoading , setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if(!Token){
@@ -76,7 +79,7 @@ const Summary: React.FC = () => {
   const FetchData = async() => {
     let Url:string;
     let Header:object;
-    if(UserType === "Customer"){
+    if(UserType === "Customer" || UserType === "Moderator"){
       Url = `${baseUrl}/device/all/summary/user`;
       Header = {
         token:`Bearer ${Token}`,
@@ -118,6 +121,8 @@ const Summary: React.FC = () => {
           refilingStatus: device.refilingStatus,
           description: device.description,
           message: device.message,
+          dateCreated:device?.deviceData?.dateCreated,
+          timeCreated:device?.deviceData?.timeCreated
         }));
         setDeviceData(devices);
       }else{
@@ -126,6 +131,8 @@ const Summary: React.FC = () => {
     } catch (error:any) {
       console.log(error);
       notify(error.response.data.error.message, "error"); 
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -231,23 +238,17 @@ const saveOrderToLocalStorage = async(data: DeviceData[]) => {
       location: device.location,
       unitWeight: device.unitWeight,
       minItems: device.minItemCount,
-      minBatteryPercentage: device.minBatteryPercentage,
       batteryPercentage: device.batteryPercentage,
       batteryVoltage: device.batteryVoltage,
       totalWeight: device.totalWeight,
-      itemCount: device.itemCount,
+      itemCount: device.itemCount !== undefined ? device.itemCount : 0,
       itemCountIncreaseBy: device.itemCountIncreaseBy,
-      itemCountDecreaseBy: device.itemCountDecreaseBy,
-      offSet: device.offSet,
-      calibrationValue: device.calibrationValue,      
+      itemCountDecreaseBy: device.itemCountDecreaseBy,   
       status: device.status,
-      minBatteryVoltage: device.minBatteryVoltage,
       refilingStatus: device.refilingStatus,
-      description: device.description,
-      message: device.message,
+      dateCreated:device.dateCreated,
+      timeCreated:device.timeCreated
     }));
-
-    console.log("Excel Data" , data);
 
     const type = "all_devices_data";
     const baseUrl = "http://localhost:3300/api";
@@ -278,16 +279,20 @@ const saveOrderToLocalStorage = async(data: DeviceData[]) => {
     />
   </div>
 
-  {/* Toggle Button for Drag and Drop */}
-  <div className="w-full md:w-auto">
-    <button
-      className={`px-4 py-3 text-[12px] mt-0 md:mt-4 w-full md:w-auto rounded-md transition-colors duration-300 ${isDragEnabled ? 'bg-red-400 hover:bg-red-300' : 'bg-green-400 hover:bg-green-300'}`}
-      onClick={() => setIsDragEnabled(!isDragEnabled)}
-    >
-      {isDragEnabled ? 'Disable Reordering' : 'Enable Reordering'}
-    </button>
-  </div>
-</div>
+      {/* Toggle Button for Drag and Drop */}
+      <div className="w-full md:w-auto">
+        <button
+          className={`px-4 py-3 text-[12px] mt-0 md:mt-4 w-full md:w-auto rounded-md transition-colors duration-300 ${isDragEnabled ? 'bg-red-400 hover:bg-red-300' : 'bg-green-400 hover:bg-green-300'}`}
+          onClick={() => setIsDragEnabled(!isDragEnabled)}
+        >
+          {isDragEnabled ? 'Disable Reordering' : 'Enable Reordering'}
+        </button>
+      </div>
+    </div>
+    {isLoading ? (
+      <div style={{color:colors.grey[100]}} className='mt-10 text-lg font-semibold'>Loading...</div>
+    ) : (  
+    <div>
       {filteredData.length > 0 ? (
         isDragEnabled ? (
          // Update the SortableContext to use ruleId instead of id
@@ -329,6 +334,8 @@ const saveOrderToLocalStorage = async(data: DeviceData[]) => {
       ) : (
         <div style={{color:colors.grey[100]}} className='mt-10 text-lg font-semibold'>No devices found...</div>
       )}
+    </div>
+    )}
     </div>
   );
 };

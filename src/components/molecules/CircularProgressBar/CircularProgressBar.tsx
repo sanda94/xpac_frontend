@@ -6,7 +6,6 @@ interface CircularProgressBarProps {
   StartValue: number;
   EndValue: number;
   LowValue: number;
-  HighValue: number;
   Units: string;
   InnerColor: string;
   TextColor: string;
@@ -19,7 +18,6 @@ const CircularProgressBar: React.FC<CircularProgressBarProps> = ({
   StartValue,
   EndValue,
   LowValue,
-  HighValue,
   Units,
   InnerColor,
   TextColor,
@@ -29,82 +27,60 @@ const CircularProgressBar: React.FC<CircularProgressBarProps> = ({
   const [ShowCurrentValue, setCurrentValue] = useState<number>(0);
   const [BarColor, setBarColor] = useState("#e74c3c");
   const [DashOffSet, setDashOffSet] = useState(0);
-  //console.log(CurrentValue);
-  const IntervalTime: number = 30; // here use mili seconds
-  //const [AnimationTime,setAnimationTime] = useState(30);
+  const IntervalTime: number = 30; // milliseconds
 
   useEffect(() => {
-    setCurrentValue(StartValue);
-  }, []);
+    setCurrentValue(StartValue); // Initialize the progress value
+  }, [StartValue]);
 
   useEffect(() => {
     CalCulateScal(StartValue, EndValue, CurrentValue);
-  }, []);
+  }, [StartValue, EndValue, CurrentValue]);
 
   useEffect(() => {
-    HandelScaleValue(CurrentValue);
-  }, []);
+    HandelScaleValue(CurrentValue); // Handle progress updates
+  }, [CurrentValue]);
 
-  const HandelScaleValue = (value: number) => {
-    if (value === ShowCurrentValue) {
-      return;
-    }
-    const Steps = Math.abs(value - ShowCurrentValue);
-    const Increment = (value - ShowCurrentValue) / Steps;
+  const HandelScaleValue = (targetValue: number) => {
+    const Steps = Math.ceil(Math.abs(targetValue - ShowCurrentValue));
+    const Increment = (targetValue - ShowCurrentValue) / Steps;
+
+    let localValue = ShowCurrentValue;
+
     const IntervalId: number = setInterval(() => {
-      setCurrentValue((prevValue) => {
-        const NewValue = prevValue + Increment;
-        //console.log(NewValue);
-        if (Math.abs(NewValue - value) <= Math.abs(Increment)) {
-          clearInterval(IntervalId);
-          return value;
-        }
-        return NewValue;
-      });
-    }, IntervalTime);
+      localValue += Increment;
 
-    return () => clearInterval(IntervalId);
+      if (Math.abs(localValue - targetValue) < 0.001) {
+        setCurrentValue(targetValue);
+        clearInterval(IntervalId);
+      } else {
+        setCurrentValue(localValue);
+      }
+    }, IntervalTime);
   };
 
-  const CalDashOffValue = (scalevalue: number) => {
-    const percentage = scalevalue / 100;
+  const CalDashOffValue = (scaleValue: number) => {
+    const percentage = scaleValue / 100;
     const DashOffCal = Math.floor(480 - 480 * percentage);
     setDashOffSet(DashOffCal);
   };
 
   const UpdateBarColor = (value: number) => {
     let color: string;
-
-    //const MidPoint = ((LowValue +HighValue)/2 ) + LowValue;
-
-    if (value >= HighValue) {
-      // Above or equal to HighValue, set to green
-      color = "#2ecc71";
-    } else if (value <= LowValue && value >= EndValue) {
-      // Below or equal to LowValue, set to red
-      color = "#e74c3c";
+    if (value > LowValue) {
+      color = "#2ecc71"; // Green
     } else {
-      // Calculate the ratio of ShowCurrentValue between LowValue and HighValue
-      const ratio = (value - LowValue) / (HighValue - LowValue);
-
-      // Interpolate between red and green based on the ratio
-      const red = Math.floor(255 * (1 - ratio));
-      const green = Math.floor(255 * ratio);
-      color = `rgb(${red}, ${green}, 0)`;
-    }
-
+      color = "#e74c3c"; // Red
+    } 
     setBarColor(color);
   };
 
   const CalCulateScal = (Start: number, End: number, value: number) => {
     const Range = 100 / (End - Start);
     const div = (value - Start) * Range;
-    UpdateBarColor(div);
+    UpdateBarColor(value);
     CalDashOffValue(div);
   };
-  //console.log(ShowCurrentValue);
-  //console.log(BarColor);
-  //console.log(DashOffSet);
 
   return (
     <div className="progress-bar">

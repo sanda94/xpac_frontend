@@ -183,7 +183,7 @@ const DataTable: React.FC<Props> = (props: Props) => {
                 />
               </svg>
             </Link>
-          ) : UserType === "Admin" || UserType === "Moderator" ? (
+          ) : UserType === "Admin" ? (
             <div className="edit" onClick={() => openPopup(params.row)}>
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 
@@ -238,7 +238,7 @@ const DataTable: React.FC<Props> = (props: Props) => {
             ...column,
             flex: 1, // Apply flex to make columns responsive
         })),
-        actionColumn,
+        ...(props.slug === "rules" && UserType !== "Admin" ? [] : [actionColumn]),
     ]}
     initialState={{
         pagination: {

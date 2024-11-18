@@ -13,10 +13,12 @@ interface DownloadExcelFunctionPropps {
 const DownloadExcel= async({data , type , baseUrl}: DownloadExcelFunctionPropps) => {
     const savedUserData = JSON.parse(localStorage.getItem('userData') || '{}');
     const Token = savedUserData.accessToken;
+    const UserType = savedUserData.userType;
     try {
        const response = await axios.post(`${baseUrl}/excel/${type}`, data, {
         headers:{
-            token: `Bearer ${Token}`
+            token: `Bearer ${Token}`,
+            usertype: UserType
         }
        });
        console.log(response);

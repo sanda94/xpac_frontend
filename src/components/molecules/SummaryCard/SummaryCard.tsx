@@ -37,12 +37,11 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   const handelNavigate = (id:string) => {
     navigate(`/device/${id}`)
   } 
-
   return (
     <div
       style={{ zIndex: 999, pointerEvents: isDrag ? 'none' : 'auto', opacity: isDrag ? 0.6 : 1 }}
       className={`p-6 rounded-lg z-30 md:max-w-[480px] lg:max-w-[480px] sm:max-w-[95%] md:h-[450px] relative md:min-h-[450px] w-full overflow-hidden 
-        ${ minCount > itemCount ? "bg-red-100" : minCount*3 > itemCount && minCount < itemCount ? "bg-yellow-100" : minCount*3 < itemCount ? "bg-green-100" : "bg-slate-100"}`}
+        ${ status === "Inactive" ? "bg-red-100" : "bg-green-100"}`}
     >
       
       <h2 
@@ -98,11 +97,10 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
             data-tooltip-id="itemCountTooltip"
             data-tooltip-content={`Item Count: ${itemCount}`}>
           <CircularProgressBar
-            CurrentValue={itemCount}
+            CurrentValue={String(itemCount) === "NaN" ? 0 : itemCount}
             StartValue={0}
-            EndValue={100}
-            LowValue={20}
-            HighValue={80}
+            EndValue={itemCount > 100 ? itemCount : 100}
+            LowValue={Number(minCount)}
             Units=""
             InnerColor="#F78F5E"
             TextColor="#1f2937"
@@ -115,7 +113,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
       <p>
             <span 
                 className="font-semibold"
-            >Refiling Status: <span className='font-normal'>{refilingStatus !== "" ? refilingStatus : "None"}</span></span>
+            >Refilling Status: <span className='font-normal'>{refilingStatus !== "" ? refilingStatus : "None"}</span></span>
           </p>
       </div>
       <div className="mb-5 cursor-default lg:mb-2">

@@ -43,6 +43,7 @@ const Category:React.FC = () => {
         category:"",
         description:""
     });
+    const [isLoading , setLoading] = useState<boolean>(true); 
 
     useEffect(() => {
         if(!Token){
@@ -67,6 +68,8 @@ const Category:React.FC = () => {
         } catch (error:any) {
           console.log(error);
           notify(error.response.data.error.message, "error"); 
+        }finally{
+          setLoading(false);
         }
       }
 
@@ -151,19 +154,25 @@ const Category:React.FC = () => {
           Add New Category
         </button>}
       </div>
-      {categoryData.length > 0 ? (
-        <div className="min-h-[75vh] mt-5 overflow-y-auto">
-          <DataTable 
-            slug="categories" 
-            columns={columns} 
-            rows={categoryData}
-            statusChange={statusChange}
-            fetchData={FetchData} 
-          />
-        </div>
+      {isLoading ? (
+        <div style={{color:colors.grey[100]}} className='mt-10 text-lg font-semibold'>Loading...</div>
       ) : (
-        <p style={{color:colors.grey[100]}} className='mt-10 text-lg font-semibold'>No Data Available...</p>
-      )}
+        <div>
+          {categoryData.length > 0 ? (
+            <div className="min-h-[75vh] mt-5 overflow-y-auto">
+              <DataTable 
+                slug="categories" 
+                columns={columns} 
+                rows={categoryData}
+                statusChange={statusChange}
+                fetchData={FetchData} 
+              />
+            </div>
+          ) : (
+            <p style={{color:colors.grey[100]}} className='mt-10 text-lg font-semibold'>No Data Available...</p>
+          )}
+       </div>
+    )}
 
       {/* Popup Form for Adding New Rule */}
       {isFormOpen && (
