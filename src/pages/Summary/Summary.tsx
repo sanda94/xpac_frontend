@@ -260,26 +260,30 @@ const saveOrderToLocalStorage = async(data: DeviceData[]) => {
     <div>
       <div className='flex items-center justify-between mt-8 lg:mt-0 lg:gap-10 lg:justify-start'>
         <PageHeader title='SUMMARY' subTitle='This is The Summary Page.' />
-        <button
-        onClick={downloadExcelFile}
-          className={`bg-orange-400 px-4 py-3 text-[12px] rounded-md hover:bg-orange-300 duration-300 transition-colors`}
-        >
-          Download Excel
-        </button>
+        {!isLoading && (
+          <button
+          onClick={downloadExcelFile}
+            className={`bg-orange-400 px-4 py-3 text-[12px] rounded-md hover:bg-orange-300 duration-300 transition-colors`}
+          >
+            Download Excel
+          </button>
+        )}
       </div>
       <div className="flex flex-col items-center w-full gap-4 md:justify-between md:flex-row">
   {/* Search Bar */}
-  <div className="w-full mt-4 md:w-6/12 lg:w-5/12">
-    <input
-      type="text"
-      placeholder="Search by title or location"
-      className="w-full px-4 py-2 text-[12px] border border-gray-300 rounded-md"
-      value={searchTerm}
-      onChange={handleSearchChange}
-    />
-  </div>
-
+      {!isLoading && (
+          <div className="w-full mt-4 md:w-6/12 lg:w-5/12">
+            <input
+              type="text"
+              placeholder="Search by title or location"
+              className="w-full px-4 py-2 text-[12px] border border-gray-300 rounded-md"
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+          </div>
+      )}
       {/* Toggle Button for Drag and Drop */}
+      {!isLoading && (
       <div className="w-full md:w-auto">
         <button
           className={`px-4 py-3 text-[12px] mt-0 md:mt-4 w-full md:w-auto rounded-md transition-colors duration-300 ${isDragEnabled ? 'bg-red-400 hover:bg-red-300' : 'bg-green-400 hover:bg-green-300'}`}
@@ -288,6 +292,7 @@ const saveOrderToLocalStorage = async(data: DeviceData[]) => {
           {isDragEnabled ? 'Disable Reordering' : 'Enable Reordering'}
         </button>
       </div>
+      )}
     </div>
     {isLoading ? (
       <div style={{color:colors.grey[100]}} className='mt-10 text-lg font-semibold'>Loading...</div>

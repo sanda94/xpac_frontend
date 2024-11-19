@@ -525,7 +525,7 @@ const columns: GridColDef[] = [
     <div>
       <div className="flex items-center justify-between gap-10 lg:justify-start">
         <PageHeader title="DEVICES MANAGEMENT" subTitle="This is The Devices Management Page." />
-        {UserType === "Admin" && <button
+        {UserType === "Admin" && !isLoading && <button
           onClick={() => setIsFormOpen(true)}
           className={`bg-orange-400 px-4 text-[12px] py-3 rounded-md hover:bg-orange-300 duration-300 transition-colors`}
         >

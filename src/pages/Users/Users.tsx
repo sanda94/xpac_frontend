@@ -371,7 +371,7 @@ const Users: React.FC = () => {
     <div>
       <div className="flex items-center justify-between gap-10 lg:justify-start">
         <PageHeader title="USERS MANAGEMENT" subTitle="This is The Users Management Page." />
-        {UserType === 'Admin' ? (
+        {UserType === 'Admin' && !isLoading ? (
           <button 
             onClick={openForm} 
             className={`bg-orange-400 px-4 py-3 rounded-md text-[12px] hover:bg-orange-300 duration-300 transition-colors`}

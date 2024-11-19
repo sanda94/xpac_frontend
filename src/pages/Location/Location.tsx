@@ -149,7 +149,7 @@ const Location:React.FC = () => {
     <div className='z-[100]'>
       <div className="flex items-center justify-between gap-10 lg:justify-start">
         <PageHeader title="LOCATIONS MANAGEMENT" subTitle="This is The Locations Management Page." />
-        {UserType !== "Customer" && <button 
+        {UserType === "Admin" && !isLoading && <button 
           onClick={() => setIsFormOpen(true)} 
           className={`bg-orange-400 px-4 py-3 text-[12px] rounded-md hover:bg-orange-300 duration-300 transition-colors`}
         >
