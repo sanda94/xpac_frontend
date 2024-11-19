@@ -85,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar }) => {
             >
                 {/* Sidebar Title */}
                 <div className="flex items-center justify-between p-4 mt-3 text-xl font-bold ">
-                    {!isCollapsed ? 'Xpac Online' : ''}
+                    {!isCollapsed ? 'XPAC' : ''}
                     <button onClick={isMobileMenuOpen ? closeSidebar : toggleSidebar} className="text-2xl text-center transition-colors duration-300 focus:outline-none hover:text-purple-500">
                         {isMobileMenuOpen ? <CgArrowLeftO /> : isCollapsed ? <CgArrowRightO /> : <CgArrowLeftO />}
                     </button>
