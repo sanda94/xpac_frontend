@@ -328,7 +328,7 @@ const UserProfile:React.FC = () => {
     const data = {
       fullName:UserUpdateData.fullName,
       emailAddress:UserUpdateData.emailAddress,
-      imageUrl:ImageUrl !== null ? `http://localhost:3300/uploads/${ImageUrl}`: UserUpdateData.imageUrl,
+      imageUrl:ImageUrl !== null ? `https://xpacc.online/uploads/${ImageUrl}`: UserUpdateData.imageUrl,
       phoneNumber:UserUpdateData.phoneNumber,
       organization:UserUpdateData.organization,
       address:UserUpdateData.address,
