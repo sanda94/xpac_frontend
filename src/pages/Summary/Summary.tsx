@@ -251,7 +251,7 @@ const saveOrderToLocalStorage = async(data: DeviceData[]) => {
     }));
 
     const type = "all_devices_data";
-    const baseUrl = "http://localhost:3300/api";
+    const baseUrl = "https://xpacc.online/api";
 
     await DownloadExcel({data , type , baseUrl})    
   }
