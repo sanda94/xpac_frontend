@@ -424,7 +424,7 @@ const UserProfile:React.FC = () => {
     const data ={
       deviceId:newRule.deviceId,
       deviceName:newRule.deviceName,
-      imageUrl:ImageUrl !== null ? `http://localhost:3300/uploads/${ImageUrl}` : null,
+      imageUrl:ImageUrl !== null ? `https://xpacc.online/uploads/${ImageUrl}` : null,
       userId:UserData?._id,
       userName:UserData?.fullName,
       emailStatus:newRule.emailStatus,
