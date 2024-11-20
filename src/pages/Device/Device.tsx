@@ -559,7 +559,7 @@ const Device: React.FC = () => {
       calibrationValue:newDevice.calibrationValue,
       status:newDevice.status,
       minBatteryVoltage:newDevice.minBatteryVoltage,
-      imageUrl:ImageUrl !== null ? `http://localhost:3300/uploads/${ImageUrl}`: newDevice.imageUrl,
+      imageUrl:ImageUrl !== null ? `https://xpacc.online/uploads/${ImageUrl}`: newDevice.imageUrl,
       refilingStatus:newDevice.refilingStatus,
       description:newDevice.description,
       message:newDevice.message,
@@ -723,7 +723,7 @@ const Device: React.FC = () => {
     }
 
     const type = "device_data";
-    const baseUrl = "http://localhost:3300/api"
+    const baseUrl = "https://xpacc.online/api"
 
     await DownloadExcel({data , type , baseUrl})
   }
