@@ -167,7 +167,7 @@ const Users: React.FC = () => {
         organization:newUser.organization,
         status:newUser.status,
         userType:newUser.userType,
-        imageUrl:ImageUrl !== null ? `http://localhost:3300/uploads/${ImageUrl}`: null,
+        imageUrl:ImageUrl !== null ? `https://xpacc.online/uploads/${ImageUrl}`: null,
         password:password,
         dateCreated:date,
         timeCreated:time,
