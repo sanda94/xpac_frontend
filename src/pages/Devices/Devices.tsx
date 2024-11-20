@@ -337,7 +337,7 @@ const CreateDevice = async() => {
     offSet:formData.offSet,
     calibrationValue:formData.calibrationValue,
     status:formData.status,
-    imageUrl:ImageUrl !== null ? `http://localhost:3300/uploads/${ImageUrl}` : null,
+    imageUrl:ImageUrl !== null ? `https://xpacc.online/uploads/${ImageUrl}` : null,
     refilingStatus:"None",
     description:formData.description,
     message:formData.message,
