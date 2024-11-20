@@ -605,7 +605,7 @@ const Device: React.FC = () => {
     const data ={
       deviceId:deviceId,
       deviceName:deviceData.title,
-      imageUrl:ImageUrl !== null ? `http://localhost:3300/uploads/${ImageUrl}` : null,
+      imageUrl:ImageUrl !== null ? `https://xpacc.online/uploads/${ImageUrl}` : null,
       userId:newRule.userId,
       userName:newRule.userName,
       emailStatus:newRule.emailStatus,
