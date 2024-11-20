@@ -756,7 +756,7 @@ const Device: React.FC = () => {
                  selectedRange == "threeMonths" ? "last_three_months_device_data" :
                  selectedRange == "sixMonths" ? "last_six_months_device_data" : "last_year_device_data";
                  
-    const baseUrl = "http://localhost:3300/api";
+    const baseUrl = "https://xpacc.online/api";
 
     await DownloadExcel({data , type , baseUrl});
   }
