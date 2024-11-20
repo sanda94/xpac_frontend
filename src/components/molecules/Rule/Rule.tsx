@@ -188,7 +188,7 @@ const RulePopup: React.FC<RuleProps> = ({ onClose, ruleData , fetchData }) => {
             deviceName:rule.deviceName,
             userId:rule.userId,
             userName:rule.userName,
-            imageUrl:ImageUrl !== null ? `http://localhost:3300/uploads/${ImageUrl}`: rule.imageUrl,
+            imageUrl:ImageUrl !== null ? `https://xpacc.online/uploads/${ImageUrl}`: rule.imageUrl,
             emailStatus:rule.emailStatus,
             dateUpdated:date,
             timeUpdated:time,
