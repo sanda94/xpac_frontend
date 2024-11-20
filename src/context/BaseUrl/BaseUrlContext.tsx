@@ -8,7 +8,7 @@ interface BaseUrlContextType {
 const BaseUrlContext = createContext<BaseUrlContextType | undefined>(undefined);
 
 export const BaseUrlProvider: React.FC<{children:ReactNode}> = ({children}) => {
-    const [baseUrl , setBaseUrl] = useState<string>("http://localhost:3300/api");
+    const [baseUrl , setBaseUrl] = useState<string>("https://xpacc.online/api");
 
     return (
         <BaseUrlContext.Provider value={{baseUrl , setBaseUrl}}>
