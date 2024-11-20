@@ -143,14 +143,14 @@ const Home: React.FC = () => {
           <span 
             className='py-2 font-semibold lg:text-xl' 
             style={{ color: colors.grey[100] }}
-            >Recent Users Device Count</span>
+            >Recent Users Device Count (30 Days)</span>
             <AreaChartCom />
         </div>
         <div className="flex flex-col items-center justify-between col-span-1 row-span-6 p-5 rounded-lg lg:col-span-2 md:col-span-2 box">
           <span 
               className='py-2 font-semibold text-center lg:text-xl' 
               style={{ color: colors.grey[100] }}
-              >Recent Device with Items Count and Battery Percentage</span>
+              >Recent Device Statistics (30 Days)</span>
             <Barchart />
         </div>
       </div>
