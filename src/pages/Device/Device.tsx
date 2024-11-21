@@ -817,7 +817,7 @@ const Device: React.FC = () => {
                   </>
                 )}
                 <div className='flex items-center justify-start gap-8'>
-                  {UserType === "Admin" && (
+                  {UserType !== "Customer" && (
                     <button
                       className="w-full px-4 py-3 mt-5 transition-colors duration-300 text-[12px] bg-green-300 rounded-md lg:w-auto hover:bg-green-200"
                       onClick={() => setShowEditDetails(true)}
@@ -974,104 +974,143 @@ const Device: React.FC = () => {
             <h2 className="mb-4 text-lg font-bold text-center text-black">Edit Device Details</h2>
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               {/* Title */}
-              <div>
-                <label htmlFor="title" className="w-full font-semibold text-[13px]">Title <strong className='text-red-500 text-[12px]'>*</strong></label>
-                <input
-                  type="text"
-                  id="title"
-                  name="title"
-                  placeholder='Title'
-                  value={newDevice.title}
-                  onChange={(e) => setNewDevice({...newDevice , title:e.target.value})}
-                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
-                />
-              </div>
+              {
+                UserType === "Admin" && (
+                  <div>
+                    <label htmlFor="title" className="w-full font-semibold text-[13px]">Title <strong className='text-red-500 text-[12px]'>*</strong></label>
+                    <input
+                      type="text"
+                      id="title"
+                      name="title"
+                      placeholder='Title'
+                      value={newDevice.title}
+                      onChange={(e) => setNewDevice({...newDevice , title:e.target.value})}
+                      className="w-full p-2 mt-2 text-[12px] border rounded-md"
+                    />
+                  </div>
+                )
+              }
+              
               {/* Assigned Product */}
-              <div>
-                <label htmlFor="assignProduct" className="w-full font-semibold text-[13px]">Assigned Product <strong className='text-red-500 text-[12px]'>*</strong></label>
-                <input
-                  id="assignProduct"
-                  name="assignProduct"
-                  placeholder='Assigned Product'
-                  value={newDevice.assignProduct}
-                  onChange={(e) => setNewDevice({...newDevice , assignProduct:e.target.value})}
-                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
-                />
-              </div>
+              {
+                UserType === "Admin" && (
+                  <div>
+                    <label htmlFor="assignProduct" className="w-full font-semibold text-[13px]">Assigned Product <strong className='text-red-500 text-[12px]'>*</strong></label>
+                    <input
+                      id="assignProduct"
+                      name="assignProduct"
+                      placeholder='Assigned Product'
+                      value={newDevice.assignProduct}
+                      onChange={(e) => setNewDevice({...newDevice , assignProduct:e.target.value})}
+                      className="w-full p-2 mt-2 text-[12px] border rounded-md"
+                    />
+                  </div>
+                )
+              }
+              
               {/* Location */}
-              <div>
-                <label htmlFor="location" className="w-full font-semibold text-[13px]">Location <strong className='text-red-500 text-[12px]'>*</strong></label>
-                <select
-                  name="location"
-                  onChange={(e) => setNewDevice({...newDevice , location:e.target.value})}
-                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
-                >
-                  <option value="None">None</option>
-                  {locations.length > 0 && locations.map((l , index) => (
-                    <option key={index} value={l.location}>{l.location}</option>
-                  ))}
-                </select>
-              </div>
-              {/* Assigned Product */}
-              <div>
-                <label htmlFor="unitWeight" className="w-full font-semibold text-[13px]">Unit Weight &#40;g&#41; <strong className='text-red-500 text-[12px]'>*</strong></label>
-                <input
-                  id="unitweight"
-                  name="unitWeight"
-                  placeholder='Unit Weight (g)'
-                  value={newDevice.unitWeight}
-                  onChange={(e) => setNewDevice({...newDevice , unitWeight:e.target.value})}
-                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
-                />
-              </div>
+              {
+                UserType === "Admin" && (
+                  <div>
+                    <label htmlFor="location" className="w-full font-semibold text-[13px]">Location <strong className='text-red-500 text-[12px]'>*</strong></label>
+                    <select
+                      name="location"
+                      onChange={(e) => setNewDevice({...newDevice , location:e.target.value})}
+                      className="w-full p-2 mt-2 text-[12px] border rounded-md"
+                    >
+                      <option value="None">None</option>
+                      {locations.length > 0 && locations.map((l , index) => (
+                        <option key={index} value={l.location}>{l.location}</option>
+                      ))}
+                    </select>
+                  </div>
+                )
+              }
+             
+              {/* Unit weight */}
+              {
+                UserType === "Admin" && (
+                  <div>
+                    <label htmlFor="unitWeight" className="w-full font-semibold text-[13px]">Unit Weight &#40;g&#41; <strong className='text-red-500 text-[12px]'>*</strong></label>
+                    <input
+                      id="unitweight"
+                      name="unitWeight"
+                      placeholder='Unit Weight (g)'
+                      value={newDevice.unitWeight}
+                      onChange={(e) => setNewDevice({...newDevice , unitWeight:e.target.value})}
+                      className="w-full p-2 mt-2 text-[12px] border rounded-md"
+                    />
+                  </div>
+                )
+              }
+              
               {/* Minimum count */}
-              <div>
-                <label htmlFor="minItems" className="w-full font-semibold text-[13px]">Minimum Items Count <strong className='text-red-500 text-[12px]'>*</strong></label>
-                <input
-                  id="minItems"
-                  name="minItems"
-                  placeholder='Minimum Count'
-                  value={newDevice.minItems}
-                  onChange={(e) => setNewDevice({...newDevice , minItems:e.target.value})}
-                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
-                />
-              </div>
-              <div>
-                <label htmlFor="minBatteryPercentage" className="w-full font-semibold text-[13px]">Minimum Battery Percentage &#40;%&#41; <strong className='text-red-500 text-[12px]'>*</strong></label>
-                <input
-                  id="minBatteryPercentage"
-                  name="minBatteryPercentage"
-                  placeholder='Minimum Battrey Percentage (%)'
-                  value={newDevice.minBatteryPercentage}
-                  onChange={(e) => setNewDevice({...newDevice , minBatteryPercentage:e.target.value})}
-                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
-                />
-              </div>
-              <div>
-                <label htmlFor="minBatteryVoltage" className="w-full font-semibold text-[13px]">Minimum Battery Voltage &#40;V&#41; <strong className='text-red-500 text-[12px]'>*</strong></label>
-                <input
-                  id="minBatteryVoltage"
-                  name="minBatteryVoltage"
-                  placeholder='Minimum Battery Voltage (V)'
-                  value={newDevice.minBatteryVoltage}
-                  onChange={(e) => setNewDevice({...newDevice , minBatteryVoltage:e.target.value})}
-                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
-                />
-              </div>
-              <div className="">
-                <label htmlFor="status" className="w-full font-semibold text-[13px]">Select Device Status <strong className='text-red-500 text-[12px]'>*</strong></label>
-                <select
-                  name="status"
-                  value={newDevice.status}
-                  onChange={(e) => setNewDevice({...newDevice , status:e.target.value})}
-                  className="w-full p-2 mt-2  text-[12px] border rounded-md"
-                >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
-              </div>
+              {
+                UserType === "Admin" && (
+                  <div>
+                    <label htmlFor="minItems" className="w-full font-semibold text-[13px]">Minimum Items Count <strong className='text-red-500 text-[12px]'>*</strong></label>
+                    <input
+                      id="minItems"
+                      name="minItems"
+                      placeholder='Minimum Count'
+                      value={newDevice.minItems}
+                      onChange={(e) => setNewDevice({...newDevice , minItems:e.target.value})}
+                      className="w-full p-2 mt-2 text-[12px] border rounded-md"
+                    />
+                  </div>
+                )
+              }
+              
+              {
+                UserType === "Admin" && (
+                  <div>
+                    <label htmlFor="minBatteryPercentage" className="w-full font-semibold text-[13px]">Minimum Battery Percentage &#40;%&#41; <strong className='text-red-500 text-[12px]'>*</strong></label>
+                    <input
+                      id="minBatteryPercentage"
+                      name="minBatteryPercentage"
+                      placeholder='Minimum Battrey Percentage (%)'
+                      value={newDevice.minBatteryPercentage}
+                      onChange={(e) => setNewDevice({...newDevice , minBatteryPercentage:e.target.value})}
+                      className="w-full p-2 mt-2 text-[12px] border rounded-md"
+                    />
+                  </div>
+                )
+              }
+             
+              {
+                UserType === "Admin" && (
+                  <div>
+                    <label htmlFor="minBatteryVoltage" className="w-full font-semibold text-[13px]">Minimum Battery Voltage &#40;V&#41; <strong className='text-red-500 text-[12px]'>*</strong></label>
+                    <input
+                      id="minBatteryVoltage"
+                      name="minBatteryVoltage"
+                      placeholder='Minimum Battery Voltage (V)'
+                      value={newDevice.minBatteryVoltage}
+                      onChange={(e) => setNewDevice({...newDevice , minBatteryVoltage:e.target.value})}
+                      className="w-full p-2 mt-2 text-[12px] border rounded-md"
+                    />
+                  </div>
+                )
+              }
+              
+              {
+                UserType === "Admin" && (
+                  <div className="">
+                    <label htmlFor="status" className="w-full font-semibold text-[13px]">Select Device Status <strong className='text-red-500 text-[12px]'>*</strong></label>
+                    <select
+                      name="status"
+                      value={newDevice.status}
+                      onChange={(e) => setNewDevice({...newDevice , status:e.target.value})}
+                      className="w-full p-2 mt-2  text-[12px] border rounded-md"
+                    >
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
+                    </select>
+                  </div>
+                )
+              }
 
-                <div className="">
+                <div className={`${UserType === "Moderator" ? "col-span-2" : ""}`}>
                 <label htmlFor="refilingStatus" className="w-full font-semibold text-[13px]">Refilling Status</label>
                   <select
                     name="refilingStatus"
@@ -1084,54 +1123,74 @@ const Device: React.FC = () => {
                     <option value="Refilling Done">Refilling Done</option>
                   </select>
                 </div>
+                {
+                UserType === "Admin" && (
+                  <div className="">
+                      <label htmlFor="image" className="w-full font-semibold text-[13px]">Category <strong className='text-red-500 text-[12px]'>*</strong></label>
+                      <select
+                        name="category"
+                        value={newDevice.category}
+                        onChange={(e) => setNewDevice({...newDevice , category:e.target.value})}
+                        className="w-full p-2 mt-2 text-[12px] border rounded-md"
+                      >
+                        <option value="None">None</option>
+                        {categories.length > 0 && categories.map((c , index) => (
+                          <option key={index} value={c.category}>{c.category}</option>
+                        ))}
+                      </select>
+                    </div>
+                )
+              }
 
-                <div className="">
-                <label htmlFor="image" className="w-full font-semibold text-[13px]">Category <strong className='text-red-500 text-[12px]'>*</strong></label>
-                <select
-                  name="category"
-                  value={newDevice.category}
-                  onChange={(e) => setNewDevice({...newDevice , category:e.target.value})}
-                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
-                >
-                  <option value="None">None</option>
-                  {categories.length > 0 && categories.map((c , index) => (
-                    <option key={index} value={c.category}>{c.category}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="minItems" className="w-full font-semibold text-[13px]">Offset</label>
-                <input
-                  id="minItems"
-                  name="minItems"
-                  placeholder='Minimum Count'
-                  value={newDevice.offSet}
-                  onChange={(e) => setNewDevice({...newDevice , offSet:e.target.value})}
-                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
-                />
-              </div>
-              <div>
-                <label htmlFor="minItems" className="w-full font-semibold text-[13px]">Calibration Value</label>
-                <input
-                  id="minItems"
-                  name="minItems"
-                  placeholder='Minimum Count'
-                  value={newDevice.calibrationValue}
-                  onChange={(e) => setNewDevice({...newDevice , calibrationValue:e.target.value})}
-                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
-                />
-              </div>
+               
+              {
+                UserType === "Admin" && (
+                  <div>
+                    <label htmlFor="minItems" className="w-full font-semibold text-[13px]">Offset</label>
+                    <input
+                      id="minItems"
+                      name="minItems"
+                      placeholder='Minimum Count'
+                      value={newDevice.offSet}
+                      onChange={(e) => setNewDevice({...newDevice , offSet:e.target.value})}
+                      className="w-full p-2 mt-2 text-[12px] border rounded-md"
+                    />
+                  </div>
+                )
+              }
+             
+              {
+                UserType === "Admin" && (
+                  <div>
+                    <label htmlFor="minItems" className="w-full font-semibold text-[13px]">Calibration Value</label>
+                    <input
+                      id="minItems"
+                      name="minItems"
+                      placeholder='Minimum Count'
+                      value={newDevice.calibrationValue}
+                      onChange={(e) => setNewDevice({...newDevice , calibrationValue:e.target.value})}
+                      className="w-full p-2 mt-2 text-[12px] border rounded-md"
+                    />
+                  </div>
+                )
+              }
+             
                 {/* Image Upload */}
-              <div className='md:col-span-2'>
-                <label htmlFor="image" className="w-full font-semibold text-[13px]">Upload Image</label>
-                <input
-                  type="file"
-                  id="image"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
-                />
-              </div>
+                {
+                UserType === "Admin" && (
+                  <div className='md:col-span-2'>
+                    <label htmlFor="image" className="w-full font-semibold text-[13px]">Upload Image</label>
+                    <input
+                      type="file"
+                      id="image"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="w-full p-2 mt-2 text-[12px] border rounded-md"
+                    />
+                  </div>
+                )
+              }
+            
                 {/* Description */}
                 <div className='md:col-span-2'>
                     <label htmlFor="description" className="w-full font-semibold text-[13px]">Description</label>
