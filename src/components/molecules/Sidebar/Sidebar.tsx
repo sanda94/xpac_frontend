@@ -49,7 +49,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar }) => {
 
     
     const mainMenuItems = [
-        { name: 'Home', icon: <FaHome />, path: '/home' },
+        ...(UserType !== 'Customer' ? [{ name: 'Home', icon: <FaHome />, path: '/home' }] : []),
         { name: 'Summary', icon: <PiPresentationChartFill />, path: '/summary' },
     ];
 

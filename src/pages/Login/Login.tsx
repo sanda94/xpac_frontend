@@ -51,7 +51,12 @@ const Login: React.FC = () => {
             password: UserDetails.password
           });
       if(response.data.status){
-        navigate("/home")
+        if(response.data.userType === "Customer"){
+          navigate("/summary");
+        }else{
+          navigate("/home");
+        }
+       
         localStorage.setItem('userData' , JSON.stringify({
           emailAddress: UserDetails.emailAddress,
           userId:response.data.userId,
