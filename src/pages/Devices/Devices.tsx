@@ -8,6 +8,7 @@ import { useToast } from '../../context/Alert/AlertContext';
 import { useNavigate } from 'react-router-dom';
 import { useBaseUrl } from '../../context/BaseUrl/BaseUrlContext';
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 
 type Device = {
   _id:string,
@@ -44,6 +45,7 @@ interface FormData {
   status: string;
   description: string;
   message: string;
+  key: string;
 }
 
 type Category = {
@@ -81,6 +83,7 @@ const Devices: React.FC = () => {
     status:'Active',
     description: '',
     message:'',
+    key:''
   });
   const [categories , setCategories] = useState<Category[]>([])
   const [locations , setLocations] = useState<Location[]>([]);
@@ -324,6 +327,7 @@ const CreateDevice = async() => {
     const now = new Date();
     const date = now.toISOString().split('T')[0];
     const time = now.toTimeString().split(' ')[0];
+    const key = createKey();
 
   const data = {
     title:formData.title,
@@ -341,6 +345,7 @@ const CreateDevice = async() => {
     refilingStatus:"None",
     description:formData.description,
     message:formData.message,
+    key:key,
     dateCreated:date,
     timeCreated:time,
     dateUpdated:date,
@@ -392,6 +397,7 @@ const ClearData = () => {
     status:'Active',
     description: '',
     message:'',
+    key:''
   })
 }
 
@@ -447,18 +453,18 @@ const columns: GridColDef[] = [
     minWidth:150,
     align:"center"
   },
-  {
-    field: 'minBatteryPercentage',
-    headerName: 'Min Battery Percentage (%)',
-    minWidth:200,
-    align:"center"
-  },
-  {
-    field: 'minBatteryVoltage',
-    headerName: 'Min Battery Voltage (V)',
-    minWidth:165,
-    align:"center"
-  },
+  // {
+  //   field: 'minBatteryPercentage',
+  //   headerName: 'Min Battery Percentage (%)',
+  //   minWidth:200,
+  //   align:"center"
+  // },
+  // {
+  //   field: 'minBatteryVoltage',
+  //   headerName: 'Min Battery Voltage (V)',
+  //   minWidth:165,
+  //   align:"center"
+  // },
   {
     field: 'offSet',
     headerName: 'Offset',
@@ -476,16 +482,17 @@ const columns: GridColDef[] = [
     headerName: 'Refilling Status',
     minWidth:150
   },
-  {
-    field: 'description',
-    headerName: 'Description',
-    minWidth:150
-  },
-  {
-    field: 'message',
-    headerName: 'Message',
-    minWidth:150
-  },...(UserType !== "Customer" ? [
+  // {
+  //   field: 'description',
+  //   headerName: 'Description',
+  //   minWidth:150
+  // },
+  // {
+  //   field: 'message',
+  //   headerName: 'Message',
+  //   minWidth:150
+  // },
+  ...(UserType !== "Customer" ? [
     {
       field: "status",
       headerName: "Active Status",
@@ -520,6 +527,11 @@ const columns: GridColDef[] = [
   //   minWidth:150
   // },
 ];
+
+const createKey = () => {
+  const key = uuidv4();
+  return key;
+}
 
   return (
     <div>

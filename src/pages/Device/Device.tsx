@@ -11,6 +11,7 @@ import axios from 'axios';
 import { useToast } from '../../context/Alert/AlertContext';
 import { useNavigate, useParams } from 'react-router-dom';
 import DownloadExcel from '../../helper/DownloadXcel';
+import { v4 as uuidv4 } from 'uuid';
 
 type Device = {
   _id:string,
@@ -29,6 +30,7 @@ type Device = {
   refilingStatus:string,
   description:string,
   message:string,
+  key:string,
   dateCreated: string,
   timeCreated: string,
   dateUpdated:string,
@@ -136,6 +138,7 @@ const Device: React.FC = () => {
     refilingStatus:"",
     description:"",
     message:"",
+    key:"",
     dateCreated: "",
     timeCreated: "",
     dateUpdated:"",
@@ -167,6 +170,7 @@ const Device: React.FC = () => {
     refilingStatus:string,
     description:string,
     message:string,
+    key:string
   }>({
     _id:"",
     title:"",
@@ -184,6 +188,7 @@ const Device: React.FC = () => {
     refilingStatus:"",
     description:"",
     message:"",
+    key:""
   });
   const [users , setUsers] = useState<User[]>([]);
   const [rules, setRules] = useState<Rule[]>([]);
@@ -299,6 +304,7 @@ const Device: React.FC = () => {
             refilingStatus:deviceResponse.data.device.refilingStatus,
             description:deviceResponse.data.device.description,
             message:deviceResponse.data.device.message,
+            key:deviceResponse.data.device.key
           });
           setTodayData(lineCharDataResponse.data.data.today)
           setWeekData(lineCharDataResponse.data.data.thisWeek)
@@ -563,6 +569,7 @@ const Device: React.FC = () => {
       refilingStatus:newDevice.refilingStatus,
       description:newDevice.description,
       message:newDevice.message,
+      key:newDevice.key,
       dateUpdated:date,
       timeUpdated:time,
     }
@@ -844,6 +851,28 @@ const Device: React.FC = () => {
             </div>
           </div>
 
+          {/* Copy key */}
+          {UserType === "Admin" && deviceData.key &&  (
+            <div className="flex flex-col items-start gap-5 mt-5 text-gray-600 lg:flex-row lg:items-center">
+              {/* Display Key */}
+              <p className="text-center lg:flex lg:items-center lg:justify-center lg:text-left">
+                <strong>Key:&nbsp;&nbsp;</strong>  {deviceData.key ? deviceData.key : "None"}
+              </p>
+              
+              {/* Copy Button */}
+              {deviceData.key && (
+                <button
+                  className="px-4 py-3 w-full lg:w-auto text-white text-[12px] bg-blue-500 rounded-md hover:bg-blue-700"
+                  onClick={() => {
+                    navigator.clipboard.writeText(deviceData.key);
+                    notify("Key copied to clipboard!", "success");
+                  }}
+                >
+                  Copy Key
+                </button>
+              )}
+            </div>
+          )}
           {/* Circular Progress Bars */}
         { deviceDetails && (<div className="flex flex-col items-center justify-center w-full gap-5 mt-6 mb-6 md:grid md:grid-cols-2 xl:grid-cols-4">
           {deviceDetails && 
@@ -972,7 +1001,7 @@ const Device: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center h-full p-4 bg-black bg-opacity-50">
           <div className="w-full p-6 text-black lg:max-[90vh] md:max-h-[85vh] max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-lg lg:w-2/3">
             <h2 className="mb-4 text-lg font-bold text-center text-black">Edit Device Details</h2>
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
               {/* Title */}
               {
                 UserType === "Admin" && (
@@ -989,8 +1018,7 @@ const Device: React.FC = () => {
                     />
                   </div>
                 )
-              }
-              
+              } 
               {/* Assigned Product */}
               {
                 UserType === "Admin" && (
@@ -1174,11 +1202,42 @@ const Device: React.FC = () => {
                   </div>
                 )
               }
+               {/* Key */}
+               {UserType === "Admin" && (
+                  <div className="lg:col-span-2">
+                    <label htmlFor="deviceKey" className="w-full font-semibold text-[13px]">
+                      Device Key
+                    </label>
+                    <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+                      <input
+                        type="text"
+                        id="deviceKey"
+                        name="key"
+                        placeholder="Device Key"
+                        value={newDevice.key || ''}
+                        readOnly
+                        className="w-full p-2 mt-2 text-[12px] border rounded-md"
+                      />
+                      <button
+                        type="button"
+                        className="px-4 py-3 w-full text-[12px] text-white bg-blue-400 hover:bg-blue-300 transition-colors duration-300 rounded-lg"
+                        onClick={() => {
+                          const generatedKey = uuidv4(); 
+                          setNewDevice((prev) => ({ ...prev, key: generatedKey })); 
+                          notify("Key generated successfully!", "success"); 
+                        }}
+                      >
+                        Generate Key
+                      </button>
+                    </div>
+                  </div>
+                )
+              }             
              
                 {/* Image Upload */}
                 {
                 UserType === "Admin" && (
-                  <div className='md:col-span-2'>
+                  <div className='lg:col-span-2'>
                     <label htmlFor="image" className="w-full font-semibold text-[13px]">Upload Image</label>
                     <input
                       type="file"
@@ -1192,7 +1251,7 @@ const Device: React.FC = () => {
               }
             
                 {/* Description */}
-                <div className='md:col-span-2'>
+                <div className='lg:col-span-2'>
                     <label htmlFor="description" className="w-full font-semibold text-[13px]">Description</label>
                     <textarea
                       id="description"
@@ -1204,7 +1263,7 @@ const Device: React.FC = () => {
                     />
                 </div>
               {/* Message */}
-              <div className='md:col-span-2'>
+              <div className='lg:col-span-2'>
                 <label htmlFor="message" className="w-full font-semibold text-[13px]">Message</label>
                 <textarea
                   id="message"
