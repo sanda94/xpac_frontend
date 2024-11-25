@@ -327,7 +327,7 @@ const CreateDevice = async() => {
     const now = new Date();
     const date = now.toISOString().split('T')[0];
     const time = now.toTimeString().split(' ')[0];
-    const key = createKey();
+    const key = uuidv4();
 
   const data = {
     title:formData.title,
@@ -351,6 +351,7 @@ const CreateDevice = async() => {
     dateUpdated:date,
     timeUpdated:time
   }
+  console.log("Data: " , data);
   const response = await axios.post(`${baseUrl}/device/create`, data , {
     headers:{
       token: `Bearer ${Token}`
@@ -527,11 +528,6 @@ const columns: GridColDef[] = [
   //   minWidth:150
   // },
 ];
-
-const createKey = () => {
-  const key = uuidv4();
-  return key;
-}
 
   return (
     <div>
