@@ -565,7 +565,7 @@ const Device: React.FC = () => {
       calibrationValue:newDevice.calibrationValue,
       status:newDevice.status,
       minBatteryVoltage:newDevice.minBatteryVoltage,
-      imageUrl:ImageUrl !== null ? `https://xpacc.online/uploads/${ImageUrl}`: newDevice.imageUrl,
+      imageUrl:ImageUrl !== null ? `http://localhost:3300/uploads/${ImageUrl}`: newDevice.imageUrl,
       refilingStatus:newDevice.refilingStatus,
       description:newDevice.description,
       message:newDevice.message,
@@ -612,7 +612,7 @@ const Device: React.FC = () => {
     const data ={
       deviceId:deviceId,
       deviceName:deviceData.title,
-      imageUrl:ImageUrl !== null ? `https://xpacc.online/uploads/${ImageUrl}` : null,
+      imageUrl:ImageUrl !== null ? `http://localhost:3300/uploads/${ImageUrl}` : null,
       userId:newRule.userId,
       userName:newRule.userName,
       emailStatus:newRule.emailStatus,
@@ -730,7 +730,7 @@ const Device: React.FC = () => {
     }
 
     const type = "device_data";
-    const baseUrl = "https://xpacc.online/api"
+    const baseUrl = "http://localhost:3300/api"
 
     await DownloadExcel({data , type , baseUrl})
   }
@@ -763,7 +763,7 @@ const Device: React.FC = () => {
                  selectedRange == "threeMonths" ? "last_three_months_device_data" :
                  selectedRange == "sixMonths" ? "last_six_months_device_data" : "last_year_device_data";
                  
-    const baseUrl = "https://xpacc.online/api";
+    const baseUrl = "http://localhost:3300/api";
 
     await DownloadExcel({data , type , baseUrl});
   }
@@ -823,6 +823,9 @@ const Device: React.FC = () => {
                     <p className="text-gray-600"><strong>Last Updated:</strong> {deviceData.dateUpdated} at {deviceData.timeUpdated}</p>
                   </>
                 )}
+                {UserType === "Admin" && (
+                  <p className="text-gray-600"><strong>Key:</strong> {deviceData.key}</p>
+                )}
                 <div className='flex items-center justify-start gap-8'>
                   {UserType !== "Customer" && (
                     <button
@@ -852,15 +855,15 @@ const Device: React.FC = () => {
           </div>
 
           {/* Copy key */}
-          {UserType === "Admin" && deviceData.key &&  (
-            <div className="flex flex-col items-start gap-5 mt-5 text-gray-600 lg:flex-row lg:items-center">
+          {/* {UserType === "Admin" && deviceData.key &&  (
+            <div className="flex flex-col items-start gap-5 mt-5 text-gray-600 lg:flex-row lg:items-center"> */}
               {/* Display Key */}
-              <p className="text-center lg:flex lg:items-center lg:justify-center lg:text-left">
+              {/* <p className="text-center lg:flex lg:items-center lg:justify-center lg:text-left">
                 <strong>Key:&nbsp;&nbsp;</strong>  {deviceData.key ? deviceData.key : "None"}
-              </p>
+              </p> */}
               
               {/* Copy Button */}
-              {deviceData.key && (
+              {/* {deviceData.key && (
                 <button
                   className="px-4 py-3 w-full lg:w-auto text-white text-[12px] bg-blue-500 rounded-md hover:bg-blue-700"
                   onClick={() => {
@@ -872,7 +875,7 @@ const Device: React.FC = () => {
                 </button>
               )}
             </div>
-          )}
+          )} */}
           {/* Circular Progress Bars */}
         { deviceDetails && (<div className="flex flex-col items-center justify-center w-full gap-5 mt-6 mb-6 md:grid md:grid-cols-2 xl:grid-cols-4">
           {deviceDetails && 
@@ -1208,7 +1211,7 @@ const Device: React.FC = () => {
                     <label htmlFor="deviceKey" className="w-full font-semibold text-[13px]">
                       Device Key
                     </label>
-                    <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+                    <div className="flex flex-col justify-center w-full gap-3 lg:flex-row lg:items-center">
                       <input
                         type="text"
                         id="deviceKey"
@@ -1220,7 +1223,7 @@ const Device: React.FC = () => {
                       />
                       <button
                         type="button"
-                        className="px-4 py-3 w-full text-[12px] text-white bg-blue-400 hover:bg-blue-300 transition-colors duration-300 rounded-lg"
+                        className="px-4 py-2 text-[12px] lg:w-[150px] text-black bg-orange-400 hover:bg-orange-300 transition-colors duration-300 rounded-lg"
                         onClick={() => {
                           const generatedKey = uuidv4(); 
                           setNewDevice((prev) => ({ ...prev, key: generatedKey })); 
