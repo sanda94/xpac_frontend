@@ -1223,7 +1223,7 @@ const Device: React.FC = () => {
                       />
                       <button
                         type="button"
-                        className="px-4 py-2 text-[12px] lg:w-[150px] text-black bg-orange-400 hover:bg-orange-300 transition-colors duration-300 rounded-lg"
+                        className="px-4 py-2 mt-2 text-[12px] lg:w-[150px] text-black bg-orange-400 hover:bg-orange-300 transition-colors duration-300 rounded-lg"
                         onClick={() => {
                           const generatedKey = uuidv4(); 
                           setNewDevice((prev) => ({ ...prev, key: generatedKey })); 
