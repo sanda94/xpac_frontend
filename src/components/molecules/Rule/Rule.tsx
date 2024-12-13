@@ -225,7 +225,7 @@ const RulePopup: React.FC<RuleProps> = ({ onClose, ruleData , fetchData }) => {
     console.log(rule);
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex p-5 items-center justify-center bg-black bg-opacity-50">
             <div className="w-full p-6 text-black lg:max-[90vh] md:max-h-[85vh] max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-lg lg:w-2/3">
                 <h2 className="mb-4 text-lg font-bold text-center text-black">Edit Rule</h2>
                 <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
