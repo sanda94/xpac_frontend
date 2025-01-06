@@ -31,7 +31,7 @@ type DeviceData = {
   itemCountDecreaseBy: number;
   itemCountIncreaseBy: number;
   totalWeight:number;
-  refilingStatus: string;
+  poNumber: string;
   description: string;
   message: string;
   dateCreated:string;
@@ -106,7 +106,7 @@ const Summary: React.FC = () => {
           assignedProduct:device.assignedProduct,
           itemCount: Number(device?.deviceData?.itemCount),
           minItemCount: Number(device.minItems),
-          unitWeight: Number(device.unitWeight),
+          unitWeight: String(device.unitWeight),
           minBatteryPercentage: device.minBatteryPercentage,
           minBatteryVoltage: device.minBatteryVoltage,
           batteryPercentage: Number(device?.deviceData?.batteryPercentage),
@@ -118,7 +118,7 @@ const Summary: React.FC = () => {
           offSet: device.offSet,
           calibrationValue: device.calibrationValue,
           status: device.status,
-          refilingStatus: device.refilingStatus,
+          poNumber: device.poNumber,
           description: device.description,
           message: device.message,
           dateCreated:device?.deviceData?.dateCreated,
@@ -177,7 +177,7 @@ const Summary: React.FC = () => {
           location={datas.location ?? 'Unknown Location'}
           status={datas.status ?? 'Unknown'}
           batteryPercentage={datas.batteryPercentage ?? 0}
-          refilingStatus={datas.refilingStatus ?? 'None'}
+          poNumber={datas.poNumber ?? 'None'}
           description={datas.description ?? 'No description available'}
           message={datas.message ?? "None"}
           isDrag={isDragEnabled}
@@ -245,7 +245,7 @@ const saveOrderToLocalStorage = async(data: DeviceData[]) => {
       itemCountIncreaseBy: device.itemCountIncreaseBy,
       itemCountDecreaseBy: device.itemCountDecreaseBy,   
       status: device.status,
-      refilingStatus: device.refilingStatus,
+      poNumber: device.poNumber,
       dateCreated:device.dateCreated,
       timeCreated:device.timeCreated
     }));
@@ -289,7 +289,7 @@ const saveOrderToLocalStorage = async(data: DeviceData[]) => {
           className={`px-4 py-3 text-[12px] mt-0 md:mt-4 w-full md:w-auto rounded-md transition-colors duration-300 ${isDragEnabled ? 'bg-red-400 hover:bg-red-300' : 'bg-green-400 hover:bg-green-300'}`}
           onClick={() => setIsDragEnabled(!isDragEnabled)}
         >
-          {isDragEnabled ? 'Disable Reordering' : 'Enable Reordering'}
+          {isDragEnabled ? 'Disable Shuffling ' : 'Enable Shuffling'}
         </button>
       </div>
       )}
@@ -327,7 +327,7 @@ const saveOrderToLocalStorage = async(data: DeviceData[]) => {
                   location={d.location}
                   status={d.status}
                   batteryPercentage={d.batteryPercentage}
-                  refilingStatus={d.refilingStatus}
+                  poNumber={d.poNumber}
                   description={d.description}
                   message={d.message}
                   isDrag={isDragEnabled}

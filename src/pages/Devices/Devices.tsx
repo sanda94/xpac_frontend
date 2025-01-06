@@ -24,7 +24,7 @@ type Device = {
   status: string;
   offSet: string;
   calibrationValue: string;
-  refilingStatus:string;
+  poNumber:string;
   description: string;
   message: string;
 }
@@ -35,13 +35,14 @@ interface FormData {
   image: File | null;
   assignProduct: string;
   location:string;
+  unitWeightUnit:string;
   unitWeight:string;
   minItemsCount: string;
   minBatteryPercentage: string;
   minBatteryVoltage: string;
   offSet: string;
   calibrationValue: string;
-  refilingStatus:string;
+  poNumber:string;
   status: string;
   description: string;
   message: string;
@@ -74,12 +75,13 @@ const Devices: React.FC = () => {
     assignProduct:'',
     location:'',
     unitWeight:'',
+    unitWeightUnit:'mg',
     minItemsCount: '',
     minBatteryPercentage:'',
     minBatteryVoltage:'',
     offSet:'',
     calibrationValue: '',
-    refilingStatus:'',
+    poNumber:'',
     status:'Active',
     description: '',
     message:'',
@@ -334,7 +336,7 @@ const CreateDevice = async() => {
     category:formData.category,
     assignProduct:formData.assignProduct,
     location:formData.location,
-    unitWeight:formData.unitWeight,
+    unitWeight:`${formData.unitWeight} ${formData.unitWeightUnit}`,
     minItems:formData.minItemsCount,
     minBatteryPercentage:formData.minBatteryPercentage,
     minBatteryVoltage:formData.minBatteryVoltage,
@@ -342,7 +344,7 @@ const CreateDevice = async() => {
     calibrationValue:formData.calibrationValue,
     status:formData.status,
     imageUrl:ImageUrl !== null ? `https://xpacc.online/uploads/${ImageUrl}` : null,
-    refilingStatus:"None",
+    poNumber:formData.poNumber,
     description:formData.description,
     message:formData.message,
     key:key,
@@ -389,12 +391,13 @@ const ClearData = () => {
     assignProduct:'',
     location:'',
     unitWeight:'',
+    unitWeightUnit:'mg',
     minItemsCount: '',
     minBatteryPercentage:'',
     minBatteryVoltage:'',
     offSet:'',
     calibrationValue: '',
-    refilingStatus:'',
+    poNumber:'',
     status:'Active',
     description: '',
     message:'',
@@ -444,7 +447,7 @@ const columns: GridColDef[] = [
   },
   {
     field: 'unitWeight',
-    headerName: 'Unit Weight (g)',
+    headerName: 'Unit Weight',
     minWidth:150,
     align:"center"
   },
@@ -479,8 +482,8 @@ const columns: GridColDef[] = [
     align:"center"
   },
   {
-    field: 'refilingStatus',
-    headerName: 'Refilling Status',
+    field: 'poNumber',
+    headerName: 'PO Number',
     minWidth:150
   },
   // {
@@ -603,14 +606,32 @@ const columns: GridColDef[] = [
               </div>
               {/* Unit weight */}
               <div>
-                <label htmlFor="unitWeight" className="w-full font-semibold text-[13px]">Unit Weight &#40;g&#41; <strong className='text-red-500 text-[12px]'>*</strong></label>
-                <input
-                  id="unitweight"
-                  name="unitWeight"
-                  placeholder='Unit Weight (g)'
-                  onChange={(e) => setFormData({...formData , unitWeight:e.target.value})}
-                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
-                />
+                <label htmlFor="unitWeight" className="w-full font-semibold text-[13px]">Unit Weight <strong className='text-red-500 text-[12px]'>*</strong></label>
+                <div className='flex gap-2'>
+                  <input
+                    id="unitweight"
+                    name="unitWeight"
+                    placeholder='Unit Weight'
+                    onChange={(e) => setFormData({...formData , unitWeight:e.target.value})}
+                    className="w-[60%] p-2 mt-2 text-[12px] border rounded-md"
+                  />
+                  <select
+                    name="unitWeightUnit"
+                    onChange={(e) => setFormData({...formData , unitWeightUnit:e.target.value})}
+                    className="p-2 w-[40%] mt-2 text-[12px] border rounded-md"
+                  >
+                    <option value="mg">Milligram (mg)</option>
+                    <option value="g">Gram (g)</option>
+                    <option value="kg">Kilogram (kg)</option>
+                    <option value="t">Metric ton (t)</option>
+                    <option value="lg">Pound (lb)</option>
+                    <option value="mL">Milliliter (mL)</option>
+                    <option value="cL">Centiliter (cL)</option>
+                    <option value="dL">Deciliter (dL)</option>
+                    <option value="L">Liter (L)</option>
+                    <option value="m³">Cubic meter (m³)</option>
+                  </select>
+                </div>
               </div>
               {/* Minimum Item count */}
               <div>
@@ -699,6 +720,17 @@ const columns: GridColDef[] = [
                   name="calibrationValue"
                   placeholder='Calibration Value'
                   onChange={(e) => setFormData({...formData , calibrationValue:e.target.value})}
+                  className="w-full p-2 mt-2 text-[12px] border rounded-md"
+                />
+              </div>
+              {/* PO Number */}
+              <div>
+                <label htmlFor="poNumber" className="w-full font-semibold text-[13px]">PO Number</label>
+                <input
+                  id="poNumber"
+                  name="poNumber"
+                  placeholder='PO Number'
+                  onChange={(e) => setFormData({...formData , poNumber:e.target.value})}
                   className="w-full p-2 mt-2 text-[12px] border rounded-md"
                 />
               </div>

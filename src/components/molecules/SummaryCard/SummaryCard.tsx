@@ -12,7 +12,7 @@ interface SummaryCardProps {
   location: string;
   status: string;
   batteryPercentage: number;
-  refilingStatus: string;
+  poNumber: string;
   description: string;
   message:string;
   isDrag:boolean
@@ -27,7 +27,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   location,
   status,
   batteryPercentage,
-  refilingStatus,
+  poNumber,
   description,
   message,
   isDrag
@@ -61,7 +61,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
             <span 
                 className="font-semibold"
                 data-tooltip-id="unitWeightTooltip"
-                data-tooltip-content={`Weight of each unit in ${unitWeight} kg`}>Unit Weight: <span className='font-normal'>{unitWeight ? unitWeight : 0} kg</span></span>
+                data-tooltip-content={`Weight of each unit in ${unitWeight} kg`}>Unit Weight: <span className='font-normal'>{unitWeight ? unitWeight : 0}</span></span>
           </p>
           <p>
             <span 
@@ -113,7 +113,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
       <p>
             <span 
                 className="font-semibold"
-            >Refilling Status: <span className='font-normal'>{refilingStatus !== "" ? refilingStatus : "None"}</span></span>
+            >PO Number: <span className='font-normal'>{poNumber !== "" ? poNumber : "None"}</span></span>
           </p>
       </div>
       <div className="mb-5 cursor-default lg:mb-2">

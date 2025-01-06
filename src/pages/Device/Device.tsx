@@ -27,7 +27,7 @@ type Device = {
   status:string,
   minBatteryVoltage:string,
   imageUrl:string,
-  refilingStatus:string,
+  poNumber:string,
   description:string,
   message:string,
   key:string,
@@ -135,7 +135,7 @@ const Device: React.FC = () => {
     status:"",
     minBatteryVoltage:"",
     imageUrl:"",
-    refilingStatus:"",
+    poNumber:"",
     description:"",
     message:"",
     key:"",
@@ -160,6 +160,7 @@ const Device: React.FC = () => {
     assignProduct:string,
     location:string,
     unitWeight:string,
+    unitWeightUnit:string,
     minItems:string,
     minBatteryPercentage:string,
     offSet: string;
@@ -167,7 +168,7 @@ const Device: React.FC = () => {
     status:string,
     minBatteryVoltage:string,
     imageUrl:string,
-    refilingStatus:string,
+    poNumber:string,
     description:string,
     message:string,
     key:string
@@ -177,6 +178,7 @@ const Device: React.FC = () => {
     category:"",
     assignProduct:"",
     unitWeight:"",
+    unitWeightUnit:"",
     location:"",
     minItems:"",
     minBatteryPercentage:"",
@@ -185,7 +187,7 @@ const Device: React.FC = () => {
     status:"",
     minBatteryVoltage:"",
     imageUrl:"",
-    refilingStatus:"",
+    poNumber:"",
     description:"",
     message:"",
     key:""
@@ -231,8 +233,7 @@ const Device: React.FC = () => {
   const [sixMonthsData , setSixMonthsData] = useState<LineChartData[]>([]);
   const [yearData , setYearData] = useState<LineChartData[]>([]);
   const [isLoading , setLoading] = useState<boolean>(true); 
-
-  console.log(todayData);
+  const [isDataReady, setIsDataReady] = useState<boolean>(false);
 
   useEffect(() => {
     if(!Token){
@@ -283,16 +284,23 @@ const Device: React.FC = () => {
         deviceDetailsResponse.data.status &&
         lineCharDataResponse.data.status
       ){
+
+        const deviceData = deviceResponse.data.device;
+
+        const { numericUnitWeight, unitWeightUnit } = extractUnitWeight(
+          deviceData.unitWeight
+        );
+
         setUsers(usersResponse.data.nonAdminUsers);
         setRules(rulesResponse.data.rules);  
         setDeviceData(deviceResponse.data.device);
           setNewDevice({
-            ...newDevice,
              _id:deviceResponse.data.device._id,
             title:deviceResponse.data.device.title,
             category:deviceResponse.data.device.category,
             assignProduct:deviceResponse.data.device.assignProduct,
-            unitWeight:deviceResponse.data.device.unitWeight,
+            unitWeight:String(numericUnitWeight),
+            unitWeightUnit:unitWeightUnit,
             location:deviceResponse.data.device.location,
             minItems:deviceResponse.data.device.minItems,
             minBatteryPercentage:deviceResponse.data.device.minBatteryPercentage,
@@ -301,7 +309,7 @@ const Device: React.FC = () => {
             status:deviceResponse.data.device.status,
             minBatteryVoltage:deviceResponse.data.device.minBatteryVoltage,
             imageUrl:deviceResponse.data.device.imageUrl,
-            refilingStatus:deviceResponse.data.device.refilingStatus,
+            poNumber:deviceResponse.data.device.poNumber,
             description:deviceResponse.data.device.description,
             message:deviceResponse.data.device.message,
             key:deviceResponse.data.device.key
@@ -312,6 +320,8 @@ const Device: React.FC = () => {
           setThreeMonthsData(lineCharDataResponse.data.data.lastThreeMonths)
           setSixMonthsData(lineCharDataResponse.data.data.lastSixMonths)
           setYearData(lineCharDataResponse.data.data.lastYear)
+
+          setIsDataReady(true)
       }else{
         notify(deviceResponse.data.error.message , 'error');
       }
@@ -322,6 +332,22 @@ const Device: React.FC = () => {
       setLoading(false);
     }
   }
+
+  const extractUnitWeight = (unitWeightString:string) => {
+    let numericUnitWeight = "";
+    let unitWeightUnit = "";
+  
+    if (unitWeightString) {
+      const parts = unitWeightString.split(/\s+/); 
+  
+      if (parts.length >= 2) {
+        numericUnitWeight = parts[0].trim(); 
+        unitWeightUnit = parts[1].trim();  
+      }
+    }
+  
+    return { numericUnitWeight, unitWeightUnit };
+  };
 
   const FetchDeviceDetails = async() => {
     try {
@@ -558,7 +584,7 @@ const Device: React.FC = () => {
       category:newDevice.category,
       assignProduct:newDevice.assignProduct,
       location:newDevice.location,
-      unitWeight:newDevice.unitWeight,
+      unitWeight:`${newDevice.unitWeight} ${newDevice.unitWeightUnit}`,
       minItems:newDevice.minItems,
       minBatteryPercentage:newDevice.minBatteryPercentage,
       offSet:newDevice.offSet,
@@ -566,7 +592,7 @@ const Device: React.FC = () => {
       status:newDevice.status,
       minBatteryVoltage:newDevice.minBatteryVoltage,
       imageUrl:ImageUrl !== null ? `https://xpacc.online/uploads/${ImageUrl}`: newDevice.imageUrl,
-      refilingStatus:newDevice.refilingStatus,
+      poNumber:newDevice.poNumber,
       description:newDevice.description,
       message:newDevice.message,
       key:newDevice.key,
@@ -724,7 +750,7 @@ const Device: React.FC = () => {
       itemCountIncreaseBy:deviceDetails.itemCountIncreaseBy,
       itemCountDecreaseBy: deviceDetails.itemCountDecreaseBy,
       status:deviceData.status,
-      refilingStatus:deviceData.refilingStatus,
+      poNumber:deviceData.poNumber,
       dateCreated:deviceDetails.dateCreated,
       timeCreated:deviceDetails.timeCreated
     }
@@ -754,7 +780,7 @@ const Device: React.FC = () => {
     location:deviceData.location,
     unitWeight:deviceData.unitWeight,
     status:deviceData.status,
-    refilingStatus:deviceData.refilingStatus,
+    poNumber:deviceData.poNumber,
   }));
     
    const  type = selectedRange == "day" ? "today_device_data" :
@@ -795,12 +821,7 @@ const Device: React.FC = () => {
                 )}
                 <p className="text-gray-600"><strong>Assigned Product:</strong> {deviceData.assignProduct ? deviceData.assignProduct : "None"}</p>
                 <p className="text-gray-600"><strong>Location:</strong> {deviceData.location ? deviceData.location : "None"}</p>
-                <p className="text-gray-600"><strong>Unit Weight:</strong> {deviceData.unitWeight
-                                                                                  ? deviceData.unitWeight.includes("g")
-                                                                                  ? deviceData.unitWeight
-                                                                                  : `${deviceData.unitWeight}g`
-                                                                                  : "0g"}
-                </p>
+                <p className="text-gray-600"><strong>Unit Weight:</strong> {deviceData.unitWeight}</p>
                 <p className="text-gray-600"><strong>Minimum Items Count:</strong> {deviceData.minItems ? deviceData.minItems : "0"}</p>
                 <p className="text-gray-600"><strong>Minimum Battery Percentage:</strong> {deviceData.minBatteryPercentage 
                                                                                    ? deviceData.minBatteryPercentage.includes("%") 
@@ -815,7 +836,7 @@ const Device: React.FC = () => {
                 <p className="text-gray-600"><strong>Offset:</strong> {deviceData.offSet ? deviceData.offSet : "None"}</p>
                 <p className="text-gray-600"><strong>Calibration Value:</strong> {deviceData.calibrationValue ? deviceData.calibrationValue : "None"}</p>
                 <p className="text-gray-600"><strong>Active Status:</strong> {deviceData.status ? deviceData.status : "None"}</p>
-                <p className="text-gray-600"><strong>Refilling Status:</strong> {deviceData.refilingStatus ? deviceData.refilingStatus :"None"}</p>
+                <p className="text-gray-600"><strong>PO Number:</strong> {deviceData.poNumber ? deviceData.poNumber :"None"}</p>
                 <p className="text-gray-600"><strong>Message:</strong> {deviceData.message ? deviceData.message : "None"}</p>
                 {UserType !== "Customer" && (
                   <>
@@ -931,7 +952,7 @@ const Device: React.FC = () => {
                 {/* Total Weight */}
                 <Circle
                   title="Total Weight"
-                  value={`${deviceDetails.totalWeight !== 0 ? deviceDetails.totalWeight : 0} g`}
+                  value={`${deviceDetails.totalWeight !== 0 ? deviceDetails.totalWeight : 0} ${newDevice.unitWeightUnit}`}
                   unVal={String(deviceDetails.totalWeight !== 0 ? deviceDetails.totalWeight : 0)}
                   bgColor="#f0f75e"
                   icon={Icons.totalWeight}
@@ -1060,17 +1081,36 @@ const Device: React.FC = () => {
              
               {/* Unit weight */}
               {
-                UserType === "Admin" && (
+                UserType === "Admin" && isDataReady && (
                   <div>
-                    <label htmlFor="unitWeight" className="w-full font-semibold text-[13px]">Unit Weight &#40;g&#41; <strong className='text-red-500 text-[12px]'>*</strong></label>
-                    <input
-                      id="unitweight"
-                      name="unitWeight"
-                      placeholder='Unit Weight (g)'
-                      value={newDevice.unitWeight}
-                      onChange={(e) => setNewDevice({...newDevice , unitWeight:e.target.value})}
-                      className="w-full p-2 mt-2 text-[12px] border rounded-md"
-                    />
+                    <label htmlFor="unitWeight" className="w-full font-semibold text-[13px]">Unit Weight <strong className='text-red-500 text-[12px]'>*</strong></label>
+                    <div className='flex gap-2'>
+                      <input
+                        id="unitweight"
+                        name="unitWeight"
+                        placeholder='Unit Weight'
+                        value={newDevice.unitWeight}
+                        onChange={(e) => setNewDevice({...newDevice , unitWeight:e.target.value})}
+                        className="w-[60%] p-2 mt-2 text-[12px] border rounded-md"
+                      />
+                      <select
+                        name="unitWeightUnit"
+                        value={newDevice.unitWeightUnit}
+                        onChange={(e) => setNewDevice({...newDevice , unitWeightUnit:e.target.value})}
+                        className="p-2 w-[40%] mt-2 text-[12px] border rounded-md"
+                      >
+                        <option value="mg">Milligram (mg)</option>
+                        <option value="g">Gram (g)</option>
+                        <option value="kg">Kilogram (kg)</option>
+                        <option value="t">Metric ton (t)</option>
+                        <option value="lg">Pound (lb)</option>
+                        <option value="mL">Milliliter (mL)</option>
+                        <option value="cL">Centiliter (cL)</option>
+                        <option value="dL">Deciliter (dL)</option>
+                        <option value="L">Liter (L)</option>
+                        <option value="m³">Cubic meter (m³)</option>
+                      </select>
+                    </div>
                   </div>
                 )
               }
@@ -1079,11 +1119,11 @@ const Device: React.FC = () => {
               {
                 UserType === "Admin" && (
                   <div>
-                    <label htmlFor="minItems" className="w-full font-semibold text-[13px]">Minimum Items Count <strong className='text-red-500 text-[12px]'>*</strong></label>
+                    <label htmlFor="minItems" className="w-full font-semibold text-[13px]">Critical Level <strong className='text-red-500 text-[12px]'>*</strong></label>
                     <input
                       id="minItems"
                       name="minItems"
-                      placeholder='Minimum Count'
+                      placeholder='Critical Level'
                       value={newDevice.minItems}
                       onChange={(e) => setNewDevice({...newDevice , minItems:e.target.value})}
                       className="w-full p-2 mt-2 text-[12px] border rounded-md"
@@ -1142,17 +1182,15 @@ const Device: React.FC = () => {
               }
 
                 <div className={`${UserType === "Moderator" ? "col-span-2" : ""}`}>
-                <label htmlFor="refilingStatus" className="w-full font-semibold text-[13px]">Refilling Status</label>
-                  <select
-                    name="refilingStatus"
-                    value={newDevice.refilingStatus}
-                    onChange={(e) => setNewDevice({...newDevice , refilingStatus:e.target.value})}
-                    className="w-full p-2 mt-2  text-[12px] border rounded-md"
-                  >
-                    <option value="None">None</option>
-                    <option value="Refilling Start">Refilling Started</option>
-                    <option value="Refilling Done">Refilling Done</option>
-                  </select>
+                <label htmlFor="poNumber" className="w-full font-semibold text-[13px]">PO Number</label>
+                <input
+                      id="poNumber"
+                      name="poNumber"
+                      placeholder='PO Number'
+                      value={newDevice.poNumber}
+                      onChange={(e) => setNewDevice({...newDevice , poNumber:e.target.value})}
+                      className="w-full p-2 mt-2 text-[12px] border rounded-md"
+                    />
                 </div>
                 {
                 UserType === "Admin" && (
@@ -1177,11 +1215,11 @@ const Device: React.FC = () => {
               {
                 UserType === "Admin" && (
                   <div>
-                    <label htmlFor="minItems" className="w-full font-semibold text-[13px]">Offset</label>
+                    <label htmlFor="offset" className="w-full font-semibold text-[13px]">Offset</label>
                     <input
-                      id="minItems"
-                      name="minItems"
-                      placeholder='Minimum Count'
+                      id="offset"
+                      name="offset"
+                      placeholder='Offset'
                       value={newDevice.offSet}
                       onChange={(e) => setNewDevice({...newDevice , offSet:e.target.value})}
                       className="w-full p-2 mt-2 text-[12px] border rounded-md"
@@ -1193,11 +1231,11 @@ const Device: React.FC = () => {
               {
                 UserType === "Admin" && (
                   <div>
-                    <label htmlFor="minItems" className="w-full font-semibold text-[13px]">Calibration Value</label>
+                    <label htmlFor="calibrationValue" className="w-full font-semibold text-[13px]">Calibration Value</label>
                     <input
-                      id="minItems"
-                      name="minItems"
-                      placeholder='Minimum Count'
+                      id="calibrationValue"
+                      name="calibrationValue"
+                      placeholder='Calibration Value'
                       value={newDevice.calibrationValue}
                       onChange={(e) => setNewDevice({...newDevice , calibrationValue:e.target.value})}
                       className="w-full p-2 mt-2 text-[12px] border rounded-md"
@@ -1209,14 +1247,14 @@ const Device: React.FC = () => {
                {UserType === "Admin" && (
                   <div className="lg:col-span-2">
                     <label htmlFor="deviceKey" className="w-full font-semibold text-[13px]">
-                      Device Key
+                      PCB Key
                     </label>
                     <div className="flex flex-col justify-center w-full gap-3 lg:flex-row lg:items-center">
                       <input
                         type="text"
                         id="deviceKey"
                         name="key"
-                        placeholder="Device Key"
+                        placeholder="PCB Key"
                         value={newDevice.key || ''}
                         readOnly
                         className="w-full p-2 mt-2 text-[12px] border rounded-md"
