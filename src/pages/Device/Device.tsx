@@ -735,6 +735,10 @@ const Device: React.FC = () => {
 
   // ---------- Function to current details ----------
   const downloadCurrentDetails = async() => {
+    
+    // Extract the unit from unitWeight
+    const unit = deviceData.unitWeight.split(" ")[1];
+
     const data = {
       id:deviceData._id,
       title:deviceData.title,
@@ -745,7 +749,7 @@ const Device: React.FC = () => {
       minItems:deviceData.minItems,
       batteryPercentage:deviceDetails.batteryPercentage,
       batteryVoltage:deviceDetails.batteryVoltage,
-      totalWeight:deviceDetails.totalWeight,
+      totalWeight:`${deviceDetails.totalWeight} ${unit}`,
       itemCount:deviceDetails.itemCount,
       itemCountIncreaseBy:deviceDetails.itemCountIncreaseBy,
       itemCountDecreaseBy: deviceDetails.itemCountDecreaseBy,
@@ -770,6 +774,9 @@ const Device: React.FC = () => {
     selectedRange === "threeMonths" ? threeMonthsData :
     selectedRange === "sixMonths" ? sixMonthsData : yearData;
 
+  // Extract the unit from unitWeight
+  const unit = deviceData.unitWeight.split(" ")[1];
+
   // Map over the selected data set to add title and deviceId
   const data = dataSet.map((entry) => ({
     ...entry,
@@ -779,8 +786,10 @@ const Device: React.FC = () => {
     assignProduct:deviceData.assignProduct,
     location:deviceData.location,
     unitWeight:deviceData.unitWeight,
+    minItems:deviceData.minItems,
     status:deviceData.status,
     poNumber:deviceData.poNumber,
+    totalWeight: `${entry.totalWeight} ${unit} `
   }));
     
    const  type = selectedRange == "day" ? "today_device_data" :

@@ -95,8 +95,6 @@ const Summary: React.FC = () => {
       const response = await axios.get(Url,{
         headers: Header
       });
-      console.log("Url:" , Url);
-      console.log("Responsee Data: ",response.data);
       if(response.data.status){
         const devices: DeviceData[] = response.data.devices.map((device:any) => ({
           ruleId:device.ruleId,
@@ -230,30 +228,43 @@ const saveOrderToLocalStorage = async(data: DeviceData[]) => {
       return;
     }
   
-    const data = deviceData.map((device) => ({
-      id: device.id,
-      title: device.deviceTitle,
-      category: device.category,
-      assignProduct: device.assignedProduct,
-      location: device.location,
-      unitWeight: device.unitWeight,
-      minItems: device.minItemCount,
-      batteryPercentage: device.batteryPercentage,
-      batteryVoltage: device.batteryVoltage,
-      totalWeight: device.totalWeight,
-      itemCount: device.itemCount !== undefined ? device.itemCount : 0,
-      itemCountIncreaseBy: device.itemCountIncreaseBy,
-      itemCountDecreaseBy: device.itemCountDecreaseBy,   
-      status: device.status,
-      poNumber: device.poNumber,
-      dateCreated:device.dateCreated,
-      timeCreated:device.timeCreated
-    }));
+    const mappedData = deviceData.map((device) => {
+      let weightUnit = "";
+  
+     // Extract the unit from unitWeight
+      if (device.unitWeight) {
+        const unitWeightString = String(device.unitWeight); // Coerce to string
+        const unitParts = unitWeightString.split(" ");
+        if (unitParts.length > 1) {
+          weightUnit = unitParts[1]; // Get the unit part (e.g., 'kg', 'lbs')
+        }
+      }
+  
+      return {
+        id: device.id,
+        title: device.deviceTitle,
+        category: device.category,
+        assignProduct: device.assignedProduct,
+        location: device.location,
+        unitWeight: device.unitWeight,
+        minItems: device.minItemCount,
+        batteryPercentage: device.batteryPercentage,
+        batteryVoltage: device.batteryVoltage,
+        totalWeight: `${device.totalWeight} ${weightUnit}`,
+        itemCount: device.itemCount !== undefined ? device.itemCount : 0,
+        itemCountIncreaseBy: device.itemCountIncreaseBy,
+        itemCountDecreaseBy: device.itemCountDecreaseBy,
+        status: device.status,
+        poNumber: device.poNumber,
+        dateCreated: device.dateCreated,
+        timeCreated: device.timeCreated,
+      };
+    });
 
     const type = "all_devices_data";
     const baseUrl = "https://xpacc.online/api";
 
-    await DownloadExcel({data , type , baseUrl})    
+    await DownloadExcel({data:mappedData , type , baseUrl})    
   }
 
   return (
