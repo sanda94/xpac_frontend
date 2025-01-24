@@ -635,11 +635,11 @@ const columns: GridColDef[] = [
               </div>
               {/* Minimum Item count */}
               <div>
-                <label htmlFor="minItems" className="w-full font-semibold text-[13px]">Minimum Items Count <strong className='text-red-500 text-[12px]'>*</strong></label>
+                <label htmlFor="minItems" className="w-full font-semibold text-[13px]">Critical Level  <strong className='text-red-500 text-[12px]'>*</strong></label>
                 <input
                   id="minItems"
                   name="minItems"
-                  placeholder='Minimum Items Count'
+                  placeholder='Critical Level'
                   onChange={(e) => setFormData({...formData , minItemsCount:e.target.value})}
                   className="w-full p-2 mt-2 text-[12px] border rounded-md"
                 />

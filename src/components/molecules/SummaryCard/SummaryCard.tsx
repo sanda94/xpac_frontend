@@ -55,16 +55,16 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
             <span 
                 className="font-semibold"
                 data-tooltip-id="unitWeightTooltip"
-                data-tooltip-content={`Weight of each unit in ${unitWeight} kg`}>Min Items Count: <span className='font-normal'>{minCount ? minCount : 0}</span></span>
+                data-tooltip-content={`Weight of each unit in ${unitWeight} kg`}>Critical Level: <span className='font-normal'>{minCount ? minCount : 0}</span></span>
           </p>
           <p>
             <span 
-                className="font-semibold"
-                data-tooltip-id="unitWeightTooltip"
-                data-tooltip-content={`Weight of each unit in ${unitWeight} kg`}>Unit Weight: <span className='font-normal'>{unitWeight ? unitWeight : 0}</span></span>
-          </p>
-          <p>
-            <span 
+              //  className="font-semibold"
+              //  data-tooltip-id="unitWeightTooltip"
+              //  data-tooltip-content={`Weight of each unit in ${unitWeight} kg`}>Unit Weight: <span className='font-normal'>{unitWeight ? unitWeight : 0}</span></span>
+          //</p>
+          //<p>
+           // <span 
                 className="font-semibold" 
                 data-tooltip-id="locationTooltip"
                 data-tooltip-content={`Location: ${location}`}>Location: <span className='font-normal'>{location}</span></span> 
