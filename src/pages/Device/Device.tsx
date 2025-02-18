@@ -615,7 +615,7 @@ const Device: React.FC = () => {
       minBatteryVoltage: newDevice.minBatteryVoltage,
       imageUrl:
         ImageUrl !== null
-          ? `https://xpacc.online/uploads/${ImageUrl}`
+          ? `https://xpac.online/uploads/${ImageUrl}`
           : newDevice.imageUrl,
       poNumber: newDevice.poNumber,
       description: newDevice.description,
@@ -668,7 +668,7 @@ const Device: React.FC = () => {
       deviceId: deviceId,
       deviceName: deviceData.title,
       imageUrl:
-        ImageUrl !== null ? `https://xpacc.online/uploads/${ImageUrl}` : null,
+        ImageUrl !== null ? `https://xpac.online/uploads/${ImageUrl}` : null,
       userId: newRule.userId,
       userName: newRule.userName,
       emailStatus: newRule.emailStatus,
@@ -787,7 +787,7 @@ const Device: React.FC = () => {
     };
 
     const type = "device_data";
-    const baseUrl = "https://xpacc.online/api";
+    const baseUrl = "https://xpac.online/api";
 
     await DownloadExcel({ data, type, baseUrl });
   };
@@ -838,7 +838,7 @@ const Device: React.FC = () => {
         ? "last_six_months_device_data"
         : "last_year_device_data";
 
-    const baseUrl = "https://xpacc.online/api";
+    const baseUrl = "https://xpac.online/api";
 
     await DownloadExcel({ data, type, baseUrl });
   };

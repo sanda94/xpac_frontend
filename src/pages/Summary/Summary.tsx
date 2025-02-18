@@ -262,7 +262,7 @@ const saveOrderToLocalStorage = async(data: DeviceData[]) => {
     });
 
     const type = "all_devices_data";
-    const baseUrl = "https://xpacc.online/api";
+    const baseUrl = "https://xpac.online/api";
 
     await DownloadExcel({data:mappedData , type , baseUrl})    
   }

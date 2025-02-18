@@ -328,7 +328,7 @@ const UserProfile:React.FC = () => {
     const data = {
       fullName:UserUpdateData.fullName,
       emailAddress:UserUpdateData.emailAddress,
-      imageUrl:ImageUrl !== null ? `https://xpacc.online/uploads/${ImageUrl}`: UserUpdateData.imageUrl,
+      imageUrl:ImageUrl !== null ? `https://xpac.online/uploads/${ImageUrl}`: UserUpdateData.imageUrl,
       phoneNumber:UserUpdateData.phoneNumber,
       organization:UserUpdateData.organization,
       address:UserUpdateData.address,
@@ -424,7 +424,7 @@ const UserProfile:React.FC = () => {
     const data ={
       deviceId:newRule.deviceId,
       deviceName:newRule.deviceName,
-      imageUrl:ImageUrl !== null ? `https://xpacc.online/uploads/${ImageUrl}` : null,
+      imageUrl:ImageUrl !== null ? `https://xpac.online/uploads/${ImageUrl}` : null,
       userId:UserData?._id,
       userName:UserData?.fullName,
       emailStatus:newRule.emailStatus,

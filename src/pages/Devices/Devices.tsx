@@ -356,7 +356,7 @@ const Devices: React.FC = () => {
         calibrationValue: formData.calibrationValue,
         status: formData.status,
         imageUrl:
-          ImageUrl !== null ? `https://xpacc.online/uploads/${ImageUrl}` : null,
+          ImageUrl !== null ? `https://xpac.online/uploads/${ImageUrl}` : null,
         poNumber: formData.poNumber,
         description: formData.description,
         message: formData.message,
