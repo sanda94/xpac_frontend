@@ -207,7 +207,7 @@ const Devices: React.FC = () => {
     const data ={
       deviceId:newRule.deviceId,
       deviceName:newRule.deviceName,
-      imageUrl:ImageUrl !== null ? `https://xpac.online/uploads/${ImageUrl}` : null,
+      imageUrl:ImageUrl !== null ? `https://xpacc.online/uploads/${ImageUrl}` : null,
       userId:newRule.userId,
       userName:newRule.userName,
       emailStatus:newRule.status,
@@ -323,7 +323,7 @@ const Devices: React.FC = () => {
       const rulesData = devices.map((device) => ({
         deviceId: device._id,
         deviceName: device.title,
-        imageUrl: ImageUrl ? `https://xpac.online/uploads/${ImageUrl}` : null,
+        imageUrl: ImageUrl ? `https://xpacc.online/uploads/${ImageUrl}` : null,
         userId: newRule.userId,
         userName: newRule.userName,
         emailStatus: newRule.status,
