@@ -24,7 +24,7 @@ const DownloadExcel= async({data , type , baseUrl}: DownloadExcelFunctionPropps)
        console.log(response);
        if(response.data.status){
         window.open(
-            `https://xpacc.online/downloads/${type}.xlsx`,"_blank"
+            `https://xpac.online/downloads/${type}.xlsx`,"_blank"
         )
        }
     } catch (error) {
